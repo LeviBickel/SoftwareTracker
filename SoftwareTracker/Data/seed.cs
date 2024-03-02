@@ -33,11 +33,11 @@ namespace SoftwareTracker.Data
         {
             try
             {
-                if (!context.Users.Any(u => u.Email == "admin@invoicer.invoicer"))
+                if (!context.Users.Any(u => u.Email == "admin@software.tracker"))
                 {
                     var userStore = new UserStore<IdentityUser>(context);
                     //var manager = new UserManager<IdentityUser>(userStore);
-                    var user = new IdentityUser() { UserName = "admin@invoicer.invoicer", Email = "admin@invoicer.invoicer", EmailConfirmed = true, LockoutEnabled= false };
+                    var user = new IdentityUser() { UserName = "admin@software.tracker", Email = "admin@software.tracker", EmailConfirmed = true, LockoutEnabled= false };
                     IdentityResult result = userManager.CreateAsync(user, "Password123!!").Result;
                     if (result.Succeeded)
                     {
