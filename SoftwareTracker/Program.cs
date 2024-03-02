@@ -13,6 +13,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddLogging();
 
 var app = builder.Build();
 
@@ -27,7 +28,16 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<ApplicationDbContext>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    //db.Database.Migrate();
+    await Seeder.CreateRoles(roleManager, userManager, logger);
+    Seeder.SeedUsers(userManager, db, logger);
+}
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
