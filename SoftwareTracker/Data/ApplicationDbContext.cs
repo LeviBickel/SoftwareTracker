@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using SoftwareTracker.Models;
 
 namespace SoftwareTracker.Data
 {
@@ -9,5 +10,7 @@ namespace SoftwareTracker.Data
             : base(options)
         {
         }
+        public DbSet<LicenseModel> Licenses { get; set; }
+        public DbSet<UserAdministration> userAdministration {  get; set; }
     }
 }
