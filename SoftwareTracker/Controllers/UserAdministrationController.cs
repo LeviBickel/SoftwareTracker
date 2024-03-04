@@ -164,6 +164,27 @@ namespace SoftwareTracker.Controllers
             return translatedUser;
         }
 
+        public async Task<IActionResult> UnlockUserAccount(string id)
+        {
+            IdentityUser user = await _context.Users.FindAsync(id);
+            if (id == null || id != user.Id)
+            {
+                return NotFound();
+            }
+            try
+            {
+                user.LockoutEnd = null;
+                user.AccessFailedCount = 0;
+                _context.Update(user);
+                _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                //TODO: log error here.
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
         private bool UserAdministrationExists(string id)
         {
             return _context.userAdministration.Any(e => e.Id == id);
