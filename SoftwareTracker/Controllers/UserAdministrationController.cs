@@ -49,12 +49,6 @@ namespace SoftwareTracker.Controllers
             return View(translatedUser);
         }
 
-        // GET: UserAdministration/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
         // GET: UserAdministration/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
@@ -73,8 +67,6 @@ namespace SoftwareTracker.Controllers
         }
 
         // POST: UserAdministration/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("Id,UserName,UserEmail,LockOutEndDate,CanLockout,Role")] UserAdministration userAdministration)
