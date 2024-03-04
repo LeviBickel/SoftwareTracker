@@ -55,22 +55,6 @@ namespace SoftwareTracker.Controllers
             return View();
         }
 
-        // POST: UserAdministration/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("Id,UserName,UserEmail,LockOutEndDate,CanLockout,Role")] UserAdministration userAdministration)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(userAdministration);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(userAdministration);
-        //}
-
         // GET: UserAdministration/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
