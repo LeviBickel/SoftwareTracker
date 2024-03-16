@@ -176,7 +176,7 @@ namespace SoftwareTracker.Controllers
                 user.LockoutEnd = null;
                 user.AccessFailedCount = 0;
                 _context.Update(user);
-                _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
