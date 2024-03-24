@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,11 +14,13 @@ namespace SoftwareTracker.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly ILogger<UserAdministrationController> _logger;
 
-        public UserAdministrationController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public UserAdministrationController(ApplicationDbContext context, UserManager<IdentityUser> userManager, ILogger<UserAdministrationController> logger)
         {
             _context = context;
             _userManager = userManager;
+            _logger = logger;
         }
 
         // GET: UserAdministration
@@ -53,23 +56,30 @@ namespace SoftwareTracker.Controllers
         // GET: UserAdministration/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
-            ViewBag.Role = new List<SelectListItem>() {
+            try
+            {
+                ViewBag.Role = new List<SelectListItem>() {
                 new SelectListItem { Text = "Administrators", Value = "Administrators" },
                 new SelectListItem { Text = "Users", Value = "Users" },
             };
 
-            if (id == null)
-            {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var user = await _context.Users.FindAsync(id);
-            var translatedUser = await TranslateUserToView(user);
-            if (user == null || translatedUser == null)
+                var user = await _context.Users.FindAsync(id);
+                var translatedUser = await TranslateUserToView(user);
+                if (user == null || translatedUser == null)
+                {
+                    return NotFound();
+                }
+                return View(translatedUser);
+            } catch (Exception ex)
             {
-                return NotFound();
+                _logger.LogError(ex.Message);
+                return RedirectToAction(nameof(Index));
             }
-            return View(translatedUser);
         }
 
         // POST: UserAdministration/Edit/5
@@ -77,14 +87,16 @@ namespace SoftwareTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("Id,UserName,UserEmail,LockOutEndDate,CanLockout,Role")] UserAdministration userAdministration)
         {
+            
             IdentityUser user = await _context.Users.FindAsync(id);
             if (id == null || id != user.Id)
             {
                 return NotFound();
             }
-
+            
             if (ModelState.IsValid)
             {
+                var changes = LoggingHelpers.EnumeratePropertyDifferences(await TranslateUserToView(user), userAdministration);
                 try
                 {
                     user.UserName = userAdministration.UserName;
@@ -98,10 +110,13 @@ namespace SoftwareTracker.Controllers
                         await _userManager.RemoveFromRoleAsync(user, _userManager.GetRolesAsync(user).Result.First());
                         await _userManager.AddToRoleAsync(user, userAdministration.Role);
                     }
+                    
                     _context.Update(user);
                     await _context.SaveChangesAsync();
+                   
+                    _logger.LogCritical($"{User.Identity.Name}, has modified the following user: {user.UserName}. Changes: {changes.Humanize()}");
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
                     if (!UserAdministrationExists(userAdministration.Id))
                     {
@@ -109,7 +124,7 @@ namespace SoftwareTracker.Controllers
                     }
                     else
                     {
-                        throw;
+                        _logger.LogError(ex.Message);
                     }
                 }
                 return RedirectToAction(nameof(Index));
@@ -146,7 +161,7 @@ namespace SoftwareTracker.Controllers
             {
                 _context.Users.Remove(user);
             }
-
+            _logger.LogCritical($"{User.Identity.Name} has deleted the following user: {user.UserName}");
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -178,15 +193,16 @@ namespace SoftwareTracker.Controllers
                 return NotFound();
             }
             try
-            {
+            {   
                 user.LockoutEnd = null;
                 user.AccessFailedCount = 0;
                 _context.Update(user);
                 await _context.SaveChangesAsync();
+                _logger.LogCritical($"{User.Identity.Name} has unlocked {user.UserName}'s account");
             }
             catch (Exception ex)
             {
-                //TODO: log error here.
+                _logger.LogError(ex.Message);
             }
             return RedirectToAction(nameof(Index));
         }
@@ -204,10 +220,11 @@ namespace SoftwareTracker.Controllers
                 user.AccessFailedCount = 5;
                 _context.Update(user);
                 await _context.SaveChangesAsync();
+                _logger.LogCritical($"{User.Identity.Name} has locked {user.UserName}'s account");
             }
             catch (Exception ex)
             {
-                //TODO: log error here.
+                _logger.LogError(ex.Message);
             }
             return RedirectToAction(nameof(Index));
         }
