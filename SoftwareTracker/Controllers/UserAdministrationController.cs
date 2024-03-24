@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SoftwareTracker.Data;
 using SoftwareTracker.Models;
@@ -49,15 +50,14 @@ namespace SoftwareTracker.Controllers
             return View(translatedUser);
         }
 
-        // GET: UserAdministration/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
         // GET: UserAdministration/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
+            ViewBag.Role = new List<SelectListItem>() {
+                new SelectListItem { Text = "Administrators", Value = "Administrators" },
+                new SelectListItem { Text = "Users", Value = "Users" },
+            };
+
             if (id == null)
             {
                 return NotFound();
@@ -73,8 +73,6 @@ namespace SoftwareTracker.Controllers
         }
 
         // POST: UserAdministration/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("Id,UserName,UserEmail,LockOutEndDate,CanLockout,Role")] UserAdministration userAdministration)
@@ -170,6 +168,48 @@ namespace SoftwareTracker.Controllers
                 Role = userRole
             };
             return translatedUser;
+        }
+
+        public async Task<IActionResult> UnlockUserAccount(string id)
+        {
+            IdentityUser user = await _context.Users.FindAsync(id);
+            if (id == null || id != user.Id)
+            {
+                return NotFound();
+            }
+            try
+            {
+                user.LockoutEnd = null;
+                user.AccessFailedCount = 0;
+                _context.Update(user);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                //TODO: log error here.
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> LockUserAccount(string id)
+        {
+            IdentityUser user = await _context.Users.FindAsync(id);
+            if (id == null || id != user.Id)
+            {
+                return NotFound();
+            }
+            try
+            {
+                user.LockoutEnd = DateTime.Now.Date.AddYears(500);
+                user.AccessFailedCount = 5;
+                _context.Update(user);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                //TODO: log error here.
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         private bool UserAdministrationExists(string id)
