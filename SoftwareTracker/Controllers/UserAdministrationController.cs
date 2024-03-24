@@ -185,6 +185,27 @@ namespace SoftwareTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> LockUserAccount(string id)
+        {
+            IdentityUser user = await _context.Users.FindAsync(id);
+            if (id == null || id != user.Id)
+            {
+                return NotFound();
+            }
+            try
+            {
+                user.LockoutEnd = DateTime.Now.Date.AddYears(500);
+                user.AccessFailedCount = 5;
+                _context.Update(user);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                //TODO: log error here.
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
         private bool UserAdministrationExists(string id)
         {
             return _context.userAdministration.Any(e => e.Id == id);
