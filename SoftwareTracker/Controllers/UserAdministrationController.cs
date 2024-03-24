@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SoftwareTracker.Data;
 using SoftwareTracker.Models;
@@ -52,6 +53,11 @@ namespace SoftwareTracker.Controllers
         // GET: UserAdministration/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
+            ViewBag.Role = new List<SelectListItem>() {
+                new SelectListItem { Text = "Administrators", Value = "Administrators" },
+                new SelectListItem { Text = "Users", Value = "Users" },
+            };
+
             if (id == null)
             {
                 return NotFound();
