@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SoftwareTracker.Data;
 using SoftwareTracker.Models;
@@ -15,10 +11,12 @@ namespace SoftwareTracker.Controllers
     public class LicenseController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<LicenseController> _logger;
 
-        public LicenseController(ApplicationDbContext context)
+        public LicenseController(ApplicationDbContext context, ILogger<LicenseController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: License
@@ -52,16 +50,30 @@ namespace SoftwareTracker.Controllers
         }
 
         // POST: License/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Manufacturer,SoftwareTitle,AssignedServer,PurchaseOrder,PurchaseDate,LicenseType,Support,SupportExp,AmountofKeys,UsedKeys,RemainingKeys,LicenseKey")] LicenseModel licenseModel)
         {
             if (ModelState.IsValid)
             {
+                var changes = LoggingHelpers.EnumeratePropertyDifferences(new LicenseModel() 
+                { 
+                    Manufacturer = "new",
+                    SoftwareTitle = "new",
+                    AssignedServer = "new",
+                    PurchaseOrder = "new",
+                    LicenseKey = "new",
+                    LicenseType = "new",
+                    PurchaseDate = new DateTime(0),
+                    Support = false,
+                    SupportExp = new DateTime(0),
+                    AmountofKeys = 0,
+                    UsedKeys = 0,
+                    RemainingKeys = 0,
+                }, licenseModel).Humanize();
                 _context.Add(licenseModel);
                 await _context.SaveChangesAsync();
+                _logger.LogInformation($"{User.Identity.Name} added a new license: {changes.Humanize()}");
                 return RedirectToAction(nameof(Index));
             }
             return View(licenseModel);
@@ -84,8 +96,6 @@ namespace SoftwareTracker.Controllers
         }
 
         // POST: License/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Manufacturer,SoftwareTitle,AssignedServer,PurchaseOrder,PurchaseDate,LicenseType,Support,SupportExp,AmountofKeys,UsedKeys,RemainingKeys,LicenseKey")] LicenseModel licenseModel)
@@ -97,12 +107,14 @@ namespace SoftwareTracker.Controllers
 
             if (ModelState.IsValid)
             {
+                var changes = LoggingHelpers.EnumeratePropertyDifferences(_context.Licenses.AsNoTracking().FirstOrDefault(m=>m.Id == licenseModel.Id), licenseModel);
                 try
                 {
                     _context.Update(licenseModel);
                     await _context.SaveChangesAsync();
+                    _logger.LogCritical($"{User.Identity.Name} modified license with ID: {licenseModel.Id} with the following changes: {changes.Humanize()}");
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
                     if (!LicenseModelExists(licenseModel.Id))
                     {
@@ -110,7 +122,7 @@ namespace SoftwareTracker.Controllers
                     }
                     else
                     {
-                        throw;
+                        _logger.LogError(ex.Message);
                     }
                 }
                 return RedirectToAction(nameof(Index));
@@ -144,6 +156,7 @@ namespace SoftwareTracker.Controllers
             var licenseModel = await _context.Licenses.FindAsync(id);
             if (licenseModel != null)
             {
+                _logger.LogCritical($"{User.Identity.Name} is deleting License with Id: {licenseModel.Id}");
                 _context.Licenses.Remove(licenseModel);
             }
 
