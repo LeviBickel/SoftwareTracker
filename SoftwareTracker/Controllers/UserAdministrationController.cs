@@ -58,10 +58,7 @@ namespace SoftwareTracker.Controllers
         {
             try
             {
-                ViewBag.Role = new List<SelectListItem>() {
-                new SelectListItem { Text = "Administrators", Value = "Administrators" },
-                new SelectListItem { Text = "Users", Value = "Users" },
-            };
+                
 
                 if (id == null)
                 {
@@ -75,7 +72,8 @@ namespace SoftwareTracker.Controllers
                     return NotFound();
                 }
                 return View(translatedUser);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 return RedirectToAction(nameof(Index));
@@ -87,13 +85,13 @@ namespace SoftwareTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("Id,UserName,UserEmail,LockOutEndDate,CanLockout,Role")] UserAdministration userAdministration)
         {
-            
+
             IdentityUser user = await _context.Users.FindAsync(id);
             if (id == null || id != user.Id)
             {
                 return NotFound();
             }
-            
+
             if (ModelState.IsValid)
             {
                 var changes = LoggingHelpers.EnumeratePropertyDifferences(await TranslateUserToView(user), userAdministration);
@@ -110,10 +108,10 @@ namespace SoftwareTracker.Controllers
                         await _userManager.RemoveFromRoleAsync(user, _userManager.GetRolesAsync(user).Result.First());
                         await _userManager.AddToRoleAsync(user, userAdministration.Role);
                     }
-                    
+
                     _context.Update(user);
                     await _context.SaveChangesAsync();
-                   
+
                     _logger.LogCritical($"{User.Identity.Name}, has modified the following user: {user.UserName}. Changes: {changes.Humanize()}");
                 }
                 catch (Exception ex)
@@ -172,6 +170,17 @@ namespace SoftwareTracker.Controllers
             if (await _userManager.IsInRoleAsync(user, "Administrators"))
             {
                 userRole = "Administrators";
+                ViewBag.Role = new List<SelectListItem>() {
+                new SelectListItem { Text = "Administrators", Value = "Administrators" },
+                new SelectListItem { Text = "Users", Value = "Users" },
+                };
+            }
+            else
+            {
+                ViewBag.Role = new List<SelectListItem>() {
+                    new SelectListItem { Text = "Users", Value = "Users" },
+                    new SelectListItem { Text = "Administrators", Value = "Administrators" },
+                };
             }
             UserAdministration translatedUser = new UserAdministration
             {
@@ -193,7 +202,7 @@ namespace SoftwareTracker.Controllers
                 return NotFound();
             }
             try
-            {   
+            {
                 user.LockoutEnd = null;
                 user.AccessFailedCount = 0;
                 _context.Update(user);
