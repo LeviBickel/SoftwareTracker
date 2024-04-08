@@ -9,6 +9,7 @@ namespace SoftwareTracker.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+           
         }
         public DbSet<LicenseModel> Licenses { get; set; }
         public DbSet<UserAdministration> userAdministration {  get; set; }
