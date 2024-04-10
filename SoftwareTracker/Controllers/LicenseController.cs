@@ -61,6 +61,7 @@ namespace SoftwareTracker.Controllers
         {
             if (ModelState.IsValid)
             {
+                licenseModel.LicenseKey = EncryptionHelper.Encrypt(licenseModel.LicenseKey);
                 var changes = LoggingHelpers.EnumeratePropertyDifferences(new LicenseModel() 
                 { 
                     Manufacturer = "new",
@@ -76,7 +77,7 @@ namespace SoftwareTracker.Controllers
                     UsedKeys = 0,
                     RemainingKeys = 0,
                 }, licenseModel).Humanize();
-                licenseModel.LicenseKey = EncryptionHelper.Encrypt(licenseModel.LicenseKey);
+                
                 _context.Add(licenseModel);
                 await _context.SaveChangesAsync();
                 _logger.LogInformation($"{User.Identity.Name} added a new license: {changes.Humanize()}");
@@ -114,10 +115,10 @@ namespace SoftwareTracker.Controllers
 
             if (ModelState.IsValid)
             {
+                licenseModel.LicenseKey = EncryptionHelper.Encrypt(licenseModel.LicenseKey);
                 var changes = LoggingHelpers.EnumeratePropertyDifferences(_context.Licenses.AsNoTracking().FirstOrDefault(m=>m.Id == licenseModel.Id), licenseModel);
                 try
                 {
-                    licenseModel.LicenseKey = EncryptionHelper.Encrypt(licenseModel.LicenseKey);
                     _context.Update(licenseModel);
                     await _context.SaveChangesAsync();
                     _logger.LogCritical($"{User.Identity.Name} modified license with ID: {licenseModel.Id} with the following changes: {changes.Humanize()}");
