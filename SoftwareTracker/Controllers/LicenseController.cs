@@ -22,7 +22,12 @@ namespace SoftwareTracker.Controllers
         // GET: License
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Licenses.ToListAsync());
+            List<LicenseModel> licenses = await _context.Licenses.ToListAsync();
+            foreach(var license in licenses)
+            {
+                license.LicenseKey= EncryptionHelper.Decrypt(license.LicenseKey);
+            }
+            return View(licenses);
         }
 
         // GET: License/Details/5
@@ -71,6 +76,7 @@ namespace SoftwareTracker.Controllers
                     UsedKeys = 0,
                     RemainingKeys = 0,
                 }, licenseModel).Humanize();
+                licenseModel.LicenseKey = EncryptionHelper.Encrypt(licenseModel.LicenseKey);
                 _context.Add(licenseModel);
                 await _context.SaveChangesAsync();
                 _logger.LogInformation($"{User.Identity.Name} added a new license: {changes.Humanize()}");
@@ -92,6 +98,7 @@ namespace SoftwareTracker.Controllers
             {
                 return NotFound();
             }
+            licenseModel.LicenseKey = EncryptionHelper.Decrypt(licenseModel.LicenseKey);
             return View(licenseModel);
         }
 
@@ -110,6 +117,7 @@ namespace SoftwareTracker.Controllers
                 var changes = LoggingHelpers.EnumeratePropertyDifferences(_context.Licenses.AsNoTracking().FirstOrDefault(m=>m.Id == licenseModel.Id), licenseModel);
                 try
                 {
+                    licenseModel.LicenseKey = EncryptionHelper.Encrypt(licenseModel.LicenseKey);
                     _context.Update(licenseModel);
                     await _context.SaveChangesAsync();
                     _logger.LogCritical($"{User.Identity.Name} modified license with ID: {licenseModel.Id} with the following changes: {changes.Humanize()}");
@@ -140,6 +148,7 @@ namespace SoftwareTracker.Controllers
 
             var licenseModel = await _context.Licenses
                 .FirstOrDefaultAsync(m => m.Id == id);
+            licenseModel.LicenseKey = EncryptionHelper.Decrypt(licenseModel.LicenseKey);
             if (licenseModel == null)
             {
                 return NotFound();
