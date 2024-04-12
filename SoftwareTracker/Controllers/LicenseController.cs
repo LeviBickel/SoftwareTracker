@@ -47,7 +47,7 @@ namespace SoftwareTracker.Controllers
             {
                 return NotFound();
             }
-
+            licenseModel.LicenseKey = EncryptionHelper.Decrypt(licenseModel.LicenseKey);
             return View(licenseModel);
         }
 
@@ -60,12 +60,15 @@ namespace SoftwareTracker.Controllers
         // POST: License/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Manufacturer,SoftwareTitle,AssignedServer,PurchaseOrder,PurchaseDate,LicenseType,Support,SupportExp,AmountofKeys,UsedKeys,RemainingKeys,LicenseKey,AddedBy")] LicenseModel licenseModel)
+        public async Task<IActionResult> Create([Bind("Id,Manufacturer,SoftwareTitle,AssignedServer,PurchaseOrder,PurchaseDate,LicenseType,Support,SupportExp,AmountofKeys,UsedKeys,RemainingKeys,LicenseKey")] LicenseModel licenseModel)
         {
+            licenseModel.AddedBy = _userManager.GetUserId(User);
+            if (licenseModel.AddedBy != null) { ModelState["AddedBy"].ValidationState = Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Valid; }
+            
             if (ModelState.IsValid)
             {
                 licenseModel.LicenseKey = EncryptionHelper.Encrypt(licenseModel.LicenseKey);
-                licenseModel.AddedBy = _userManager.GetUserId(User);
+                
                 var changes = LoggingHelpers.EnumeratePropertyDifferences(new LicenseModel() 
                 { 
                     Manufacturer = "new",
@@ -117,11 +120,12 @@ namespace SoftwareTracker.Controllers
             {
                 return NotFound();
             }
-
+            licenseModel.AddedBy = _userManager.GetUserId(User);
+            if (licenseModel.AddedBy != null) { ModelState["AddedBy"].ValidationState = Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Valid; }
             if (ModelState.IsValid)
             {
                 licenseModel.LicenseKey = EncryptionHelper.Encrypt(licenseModel.LicenseKey);
-                licenseModel.AddedBy = _userManager.GetUserId(User);
+                
                 var changes = LoggingHelpers.EnumeratePropertyDifferences(_context.Licenses.AsNoTracking().FirstOrDefault(m=>m.Id == licenseModel.Id), licenseModel);
                 try
                 {
