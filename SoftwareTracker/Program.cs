@@ -16,7 +16,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>options.SignIn.Requi
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging();;
-
+builder.WebHost.UseIIS();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
