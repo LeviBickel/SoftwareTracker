@@ -44,5 +44,7 @@ namespace SoftwareTracker.Models
 
         [Display(Name = "License Key")]
         public string LicenseKey { get; set; }
+
+        public string AddedBy { get; set; }
     }
 }
