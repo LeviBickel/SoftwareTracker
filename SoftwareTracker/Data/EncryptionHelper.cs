@@ -11,7 +11,7 @@ namespace SoftwareTracker.Data
 
         public static string Encrypt(string plainText)
         {
-            string EncryptionKey = AkeylessHelper.RetrieveEncryptionKey();
+            string EncryptionKey = AkeylessHelper.RetrieveSecret("EncryptionKey");
             byte[] encryptedBytes;
             using (Aes aesAlg = Aes.Create())
             {
@@ -28,7 +28,7 @@ namespace SoftwareTracker.Data
 
         public static string Decrypt(string cipherText)
         {
-            string EncryptionKey = AkeylessHelper.RetrieveEncryptionKey();
+            string EncryptionKey = AkeylessHelper.RetrieveSecret("EncryptionKey");
             byte[] decryptedBytes;
             using (Aes aesAlg = Aes.Create())
             {

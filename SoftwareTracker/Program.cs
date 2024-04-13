@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using SoftwareTracker.Data;
+using Microsoft.AspNetCore.Authentication.Google;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = AkeylessHelper.RetrieveConnectionString(); //builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = AkeylessHelper.RetrieveSecret("ConnectionString"); //builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -15,7 +16,12 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>options.SignIn.Requi
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
-builder.Services.AddLogging();;
+builder.Services.AddLogging();
+builder.Services.AddAuthentication().AddGoogle(options => 
+{
+    options.ClientId = AkeylessHelper.RetrieveSecret("Google-ClientID");
+    options.ClientSecret = AkeylessHelper.RetrieveSecret("Google-ClientSecret");
+});
 builder.WebHost.UseIIS();
 var app = builder.Build();
 
@@ -40,9 +46,9 @@ using (var scope = app.Services.CreateScope())
     await Seeder.CreateRoles(roleManager, userManager, logger);
     Seeder.SeedUsers(userManager, db, logger);
 }
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
 app.UseAuthorization();

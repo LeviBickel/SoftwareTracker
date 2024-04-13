@@ -16,7 +16,7 @@ namespace SoftwareTracker.Data
 
         public async Task SendEmailAsync(string email, string subject, string message)
         {
-            var response = await Execute(AkeylessHelper.RetrieveSendGridToken(), subject, message, email);
+            var response = await Execute(AkeylessHelper.RetrieveSecret("SendGridAPI"), subject, message, email);
             if (response.StatusCode != System.Net.HttpStatusCode.Accepted)
             {
                 // log or throw
