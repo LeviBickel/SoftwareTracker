@@ -9,35 +9,16 @@ namespace SoftwareTracker.Data
     public sealed class AkeylessHelper
     {
         //string token = "";
-        //V2Api instance = null;
         static V2Api instance;
-        public static string RetrieveEncryptionKey()
-        {
-            string token = AuthenticateToAKeyless();
-            List<String> secrets = new List<String>();
-            secrets.Add("SoftwareTracker/EncryptionKey");
-            var getSecretValueBody = new GetSecretValue(names: secrets, token: token);
-            Dictionary<string, string> getSecretValueResult = instance.GetSecretValue(getSecretValueBody);
-            return getSecretValueResult["SoftwareTracker/EncryptionKey"];
-        }
 
-        public static string RetrieveConnectionString()
+        public static string RetrieveSecret(string secret)
         {
             string token = AuthenticateToAKeyless();
             List<String> secrets = new List<String>();
-            secrets.Add("SoftwareTracker/ConnectionString");
+            secrets.Add($"SoftwareTracker/{secret}");
             var getSecretValueBody = new GetSecretValue(names: secrets, token: token);
             Dictionary<string, string> getSecretValueResult = instance.GetSecretValue(getSecretValueBody);
-            return getSecretValueResult["SoftwareTracker/ConnectionString"];
-        }
-        public static string RetrieveSendGridToken()
-        {
-            string token = AuthenticateToAKeyless();
-            List<String> secrets = new List<String>();
-            secrets.Add("SoftwareTracker/SendGridAPI");
-            var getSecretValueBody = new GetSecretValue(names: secrets, token: token);
-            Dictionary<string, string> getSecretValueResult = instance.GetSecretValue(getSecretValueBody);
-            return getSecretValueResult["SoftwareTracker/SendGridAPI"];
+            return getSecretValueResult[$"SoftwareTracker/{secret}"];
         }
         private static string AuthenticateToAKeyless()
         {
