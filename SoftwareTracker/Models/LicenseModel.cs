@@ -24,6 +24,7 @@ namespace SoftwareTracker.Models
 
         [Display(Name = "License Type")]
         public string LicenseType { get; set; }
+
         [Display(Name = "License Expiration")]
         [DataType(DataType.Date)]
         public DateTime LicenseExp { get; set; }
