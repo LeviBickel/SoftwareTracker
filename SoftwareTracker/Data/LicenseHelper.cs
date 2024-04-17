@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SoftwareTracker.Models;
-using System.Runtime.CompilerServices;
 
 namespace SoftwareTracker.Data
 {
@@ -29,7 +28,7 @@ namespace SoftwareTracker.Data
             {
                 if(licenses.Count <= 0)
                 {
-                    return; //Fix this -> 
+                    return; // there are no licenses returned from the database. 
                 }
                 //there are licenses here. We can do something with them.
                 foreach(var license in licenses) 
@@ -50,7 +49,6 @@ namespace SoftwareTracker.Data
             {
                 _logger.LogError(ex.Message);
             }
-                
             return;
         }
 
