@@ -22,7 +22,11 @@ builder.Services.AddAuthentication().AddGoogle(options =>
     options.ClientId = AkeylessHelper.RetrieveSecret("Google-ClientID");
     options.ClientSecret = AkeylessHelper.RetrieveSecret("Google-ClientSecret");
 });
-builder.Services.AddHangfire(configuration => configuration.UseSqlServerStorage(connectionString));
+builder.Services.AddHangfire(configuration => configuration
+        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UseSqlServerStorage(connectionString));
 builder.Services.AddHangfireServer();
 builder.WebHost.UseIIS();
 var app = builder.Build();
