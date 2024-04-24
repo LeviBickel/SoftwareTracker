@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Identity;
 using SoftwareTracker.Models;
 
 namespace SoftwareTracker.Data
@@ -6,11 +8,11 @@ namespace SoftwareTracker.Data
     public class LicenseHelper
     {
         private readonly ApplicationDbContext _context;
-        private readonly ILogger _logger;
+        private readonly ILogger<LicenseHelper> _logger;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly EmailSender _emailSender;
 
-        public LicenseHelper(ApplicationDbContext context, ILogger logger, UserManager<IdentityUser> userManager, EmailSender emailSender)
+        public LicenseHelper(ApplicationDbContext context, ILogger<LicenseHelper> logger, UserManager<IdentityUser> userManager, EmailSender emailSender)
         {
             _context = context;
             _logger = logger;
@@ -21,7 +23,7 @@ namespace SoftwareTracker.Data
         //Check the license database once a day:
         //If the license expiration is going to expire before the next scan.. Send an email based on the last user who added 
         //the license. Email is their username.
-        public async void LicenseScan()
+        public async Task LicenseScan()
         {
             List<LicenseModel> licenses = _context.Licenses.Where(m=>m.LicenseExp <= DateTime.Now.AddDays(1)).ToList();
             try
@@ -40,8 +42,8 @@ namespace SoftwareTracker.Data
                         //this class should provide: email, subject, message
                         var user = await _userManager.FindByIdAsync(license.AddedBy);
                         string emailAddress = user.UserName;
-                        string subject = "Your License is going to expire";
-                        string message = $"This is an automated notification that your {license.Manufacturer} license is going to expire within 24 hours.";
+                        string subject = $"Your {license.Manufacturer} license is going to expire";
+                        string message = $"This is an automated notification that your {license.Manufacturer} - {license.SoftwareTitle} license is going to expire on {license.LicenseExp}";
                         await _emailSender.SendEmailAsync(emailAddress,subject,message);
                     }
                 }
