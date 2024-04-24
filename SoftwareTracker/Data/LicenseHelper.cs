@@ -23,13 +23,14 @@ namespace SoftwareTracker.Data
         //the license. Email is their username.
         public async void LicenseScan()
         {
-            List<LicenseModel> licenses = _context.Licenses.ToList();
+            List<LicenseModel> licenses = _context.Licenses.Where(m=>m.LicenseExp <= DateTime.Now.AddDays(1)).ToList();
             try
             {
                 if(licenses.Count <= 0)
                 {
                     return; // there are no licenses returned from the database. 
                 }
+
                 //there are licenses here. We can do something with them.
                 foreach(var license in licenses) 
                 {

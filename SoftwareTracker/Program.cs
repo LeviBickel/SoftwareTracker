@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using SoftwareTracker.Data;
-using Microsoft.AspNetCore.Authentication.Google;
+using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +22,8 @@ builder.Services.AddAuthentication().AddGoogle(options =>
     options.ClientId = AkeylessHelper.RetrieveSecret("Google-ClientID");
     options.ClientSecret = AkeylessHelper.RetrieveSecret("Google-ClientSecret");
 });
+builder.Services.AddHangfire(configuration => configuration.UseSqlServerStorage(connectionString));
+builder.Services.AddHangfireServer();
 builder.WebHost.UseIIS();
 var app = builder.Build();
 
@@ -46,7 +48,7 @@ using (var scope = app.Services.CreateScope())
     await Seeder.CreateRoles(roleManager, userManager, logger);
     Seeder.SeedUsers(userManager, db, logger);
 }
-
+app.UseHangfireDashboard();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
