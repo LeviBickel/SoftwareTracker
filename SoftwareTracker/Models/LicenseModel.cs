@@ -16,7 +16,7 @@ namespace SoftwareTracker.Models
 
         [Display(Name = "Purchase Order #")]
         public string PurchaseOrder { get; set; }
-        
+
         [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
         [Display(Name = "Purchase Date")]
         [DataType(DataType.Date)]
@@ -30,7 +30,7 @@ namespace SoftwareTracker.Models
         public DateTime LicenseExp { get; set; }
         public bool Support { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
-        
+
         [Display(Name = "Support Expiration")]
         [DataType(DataType.Date)]
         public DateTime SupportExp { get; set; }
@@ -50,5 +50,6 @@ namespace SoftwareTracker.Models
         public string LicenseKey { get; set; }
 
         public string AddedBy { get; set; }
+        public bool Notified {  get; set; }
     }
 }

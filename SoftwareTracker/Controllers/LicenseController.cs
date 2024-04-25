@@ -68,7 +68,7 @@ namespace SoftwareTracker.Controllers
             if (ModelState.IsValid)
             {
                 licenseModel.LicenseKey = EncryptionHelper.Encrypt(licenseModel.LicenseKey);
-                
+                licenseModel.Notified = false;
                 var changes = LoggingHelpers.EnumeratePropertyDifferences(new LicenseModel() 
                 { 
                     Manufacturer = "new",
@@ -84,7 +84,8 @@ namespace SoftwareTracker.Controllers
                     UsedKeys = 0,
                     RemainingKeys = 0,
                     AddedBy = "new",
-                    LicenseExp = new DateTime(0)
+                    LicenseExp = new DateTime(0),
+                    Notified = false,
                 }, licenseModel).Humanize();
                 
                 _context.Add(licenseModel);
@@ -126,7 +127,7 @@ namespace SoftwareTracker.Controllers
             if (ModelState.IsValid)
             {
                 licenseModel.LicenseKey = EncryptionHelper.Encrypt(licenseModel.LicenseKey);
-                
+                licenseModel.Notified = _context.Licenses.AsNoTracking().FirstOrDefault(m=>m.Id == licenseModel.Id).Notified;
                 var changes = LoggingHelpers.EnumeratePropertyDifferences(_context.Licenses.AsNoTracking().FirstOrDefault(m=>m.Id == licenseModel.Id), licenseModel);
                 try
                 {
