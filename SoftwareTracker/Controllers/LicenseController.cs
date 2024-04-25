@@ -60,7 +60,7 @@ namespace SoftwareTracker.Controllers
         // POST: License/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Manufacturer,SoftwareTitle,AssignedServer,PurchaseOrder,PurchaseDate,LicenseType,Support,SupportExp,AmountofKeys,UsedKeys,RemainingKeys,LicenseKey")] LicenseModel licenseModel)
+        public async Task<IActionResult> Create([Bind("Id,Manufacturer,SoftwareTitle,AssignedServer,PurchaseOrder,PurchaseDate,LicenseType,LicenseExp,Support,SupportExp,AmountofKeys,UsedKeys,RemainingKeys,LicenseKey")] LicenseModel licenseModel)
         {
             licenseModel.AddedBy = _userManager.GetUserId(User);
             if (licenseModel.AddedBy != null) { ModelState["AddedBy"].ValidationState = Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Valid; }
@@ -68,7 +68,7 @@ namespace SoftwareTracker.Controllers
             if (ModelState.IsValid)
             {
                 licenseModel.LicenseKey = EncryptionHelper.Encrypt(licenseModel.LicenseKey);
-                
+                licenseModel.Notified = false;
                 var changes = LoggingHelpers.EnumeratePropertyDifferences(new LicenseModel() 
                 { 
                     Manufacturer = "new",
@@ -83,7 +83,9 @@ namespace SoftwareTracker.Controllers
                     AmountofKeys = 0,
                     UsedKeys = 0,
                     RemainingKeys = 0,
-                    AddedBy = "new"
+                    AddedBy = "new",
+                    LicenseExp = new DateTime(0),
+                    Notified = false,
                 }, licenseModel).Humanize();
                 
                 _context.Add(licenseModel);
@@ -114,7 +116,7 @@ namespace SoftwareTracker.Controllers
         // POST: License/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Manufacturer,SoftwareTitle,AssignedServer,PurchaseOrder,PurchaseDate,LicenseType,Support,SupportExp,AmountofKeys,UsedKeys,RemainingKeys,LicenseKey,AddedBy")] LicenseModel licenseModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Manufacturer,SoftwareTitle,AssignedServer,PurchaseOrder,PurchaseDate,LicenseType,LicenseExp,Support,SupportExp,AmountofKeys,UsedKeys,RemainingKeys,LicenseKey,AddedBy")] LicenseModel licenseModel)
         {
             if (id != licenseModel.Id)
             {
@@ -125,7 +127,7 @@ namespace SoftwareTracker.Controllers
             if (ModelState.IsValid)
             {
                 licenseModel.LicenseKey = EncryptionHelper.Encrypt(licenseModel.LicenseKey);
-                
+                licenseModel.Notified = _context.Licenses.AsNoTracking().FirstOrDefault(m=>m.Id == licenseModel.Id).Notified;
                 var changes = LoggingHelpers.EnumeratePropertyDifferences(_context.Licenses.AsNoTracking().FirstOrDefault(m=>m.Id == licenseModel.Id), licenseModel);
                 try
                 {

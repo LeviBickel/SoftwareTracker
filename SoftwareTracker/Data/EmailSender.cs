@@ -7,7 +7,7 @@ namespace SoftwareTracker.Data
     public class EmailSender : IEmailSender
     {
         private readonly ILogger<EmailSender> _logger;
-        public EmailSender(ILogger<EmailSender> logger, ApplicationDbContext context)
+        public EmailSender(ILogger<EmailSender> logger)
         {
             _logger = logger;
         }
