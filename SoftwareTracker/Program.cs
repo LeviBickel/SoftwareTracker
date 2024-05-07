@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using SoftwareTracker.Data;
 using Hangfire;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +32,11 @@ builder.Services.AddHangfire(configuration => configuration
         .UseRecommendedSerializerSettings()
         .UseSqlServerStorage(connectionString));
 builder.Services.AddHangfireServer();
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+});
 builder.WebHost.UseIIS();
 var app = builder.Build();
 
@@ -37,11 +44,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    app.UseForwardedHeaders();
 }
 else
 {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseForwardedHeaders(); 
     app.UseHsts();
 }
 using (var scope = app.Services.CreateScope())
@@ -65,7 +74,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
-
 
 RecurringJob.AddOrUpdate<LicenseHelper>("DailyLicenseExpirationScan", x => x.LicenseScan(), Cron.Daily, new RecurringJobOptions {  TimeZone = TimeZoneInfo.Local});
 app.Run();
