@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SoftwareTracker.Data;
 using Hangfire;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +35,7 @@ builder.Services.AddHangfireServer();
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders =
-        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
 });
 builder.WebHost.UseIIS();
 var app = builder.Build();
@@ -73,7 +74,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
-
 
 RecurringJob.AddOrUpdate<LicenseHelper>("DailyLicenseExpirationScan", x => x.LicenseScan(), Cron.Daily, new RecurringJobOptions {  TimeZone = TimeZoneInfo.Local});
 app.Run();
