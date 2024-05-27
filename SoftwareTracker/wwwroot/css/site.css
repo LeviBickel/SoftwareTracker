@@ -1,3 +1,13 @@
+
+/*
+    Allowed Colors:
+    #858AE3 light purple
+    #8338EC Medium purple
+    #97DFFC blue
+    #4E148C rich purple
+    #2C0735 Dark dark purple
+*/
+
 html {
   font-size: 14px;
 }
@@ -19,4 +29,12 @@ html {
 
 body {
   margin-bottom: 60px;
+}
+
+.navbar {
+    background: linear-gradient(to bottom, #858AE3, #8338EC);
+}
+.btn-primary {
+    background: #97DFFC;
+    color: black;
 }
