@@ -38,3 +38,125 @@ body {
     background: #97DFFC;
     color: black;
 }
+/* Common Styles for Cards */
+.card-custom {
+    background-color: #f6feaaff; /* Mindaro background */
+    border: 2px solid #373737ff; /* Jet border */
+    border-radius: 10px; /* Smooth rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    margin: 10px 0; /* Margin between cards */
+}
+
+.card-title-custom {
+    background-color: #373737ff; /* Jet background */
+    color: #fce694ff; /* Jasmine text */
+    padding: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    font-weight: bold; /* Bold text */
+    font-size: 1.25rem; /* Slightly larger text */
+}
+
+.card-text-custom {
+    color: #373737ff; /* Jet text */
+    padding: 10px;
+}
+/* Common Styles for Buttons */
+.btn-custom {
+    background-color: #c7dfc5ff; /* Tea Green button background */
+    color: #373737ff; /* Jet text */
+    border: none; /* No border */
+    border-radius: 5px; /* Smooth rounded corners */
+    margin: 5px; /* Add some margin */
+    padding: 10px 20px; /* Padding inside button */
+    text-align: center; /* Center text */
+}
+
+    .btn-custom:hover {
+        background-color: #fce694ff; /* Jasmine button background on hover */
+    }
+
+.btn-danger:hover {
+    background-color: #ff4d4d; /* Red button background on hover */
+}
+
+/* Details View Specific Styles */
+.details-container {
+    background-color: #f6feaaff; /* Mindaro background */
+    border: 2px solid #373737ff; /* Jet border */
+    border-radius: 10px; /* Smooth rounded corners */
+    padding: 20px; /* Padding inside container */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    margin: 20px 0; /* Margin around container */
+}
+
+.details-title {
+    background-color: #373737ff; /* Jet background */
+    color: #fce694ff; /* Jasmine text */
+    padding: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    font-weight: bold; /* Bold text */
+    font-size: 1.5rem; /* Larger text */
+    margin-bottom: 20px; /* Space below title */
+    text-align: center; /* Center align title */
+}
+
+.details-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px; /* Space between items */
+}
+
+.details-label {
+    font-weight: bold; /* Bold text */
+    color: #373737ff; /* Jet text */
+    flex: 1; /* Take up equal space */
+}
+
+.details-value {
+    color: #373737ff; /* Jet text */
+    flex: 2; /* Take up more space */
+}
+
+.details-buttons {
+    text-align: center; /* Center the buttons */
+    margin-top: 20px; /* Space above buttons */
+}
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px; /* Space between form groups */
+}
+
+.form-control {
+    border: 2px solid #373737ff; /* Jet border */
+    border-radius: 5px; /* Smooth rounded corners */
+}
+
+.form-label {
+    font-weight: bold; /* Bold text */
+    color: #373737ff; /* Jet text */
+}
+
+/* Create View Specific Styles */
+.create-container {
+    background-color: #f6feaaff; /* Mindaro background */
+    border: 2px solid #373737ff; /* Jet border */
+    border-radius: 10px; /* Smooth rounded corners */
+    padding: 20px; /* Padding inside container */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    margin: 20px auto; /* Centered and spaced from top and bottom */
+    max-width: 800px; /* Limit container width */
+}
+
+.create-title {
+    background-color: #373737ff; /* Jet background */
+    color: #fce694ff; /* Jasmine text */
+    padding: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    font-weight: bold; /* Bold text */
+    font-size: 1.5rem; /* Larger text */
+    margin-bottom: 20px; /* Space below title */
+    text-align: center; /* Center align title */
+}
