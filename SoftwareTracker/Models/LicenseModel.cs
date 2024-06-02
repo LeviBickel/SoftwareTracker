@@ -33,7 +33,7 @@ namespace SoftwareTracker.Models
 
         [Display(Name = "Support Expiration")]
         [DataType(DataType.Date)]
-        public DateTime SupportExp { get; set; }
+        public DateTime? SupportExp { get; set; }
 
         [Display(Name = "Total Keys")]
         [Required]

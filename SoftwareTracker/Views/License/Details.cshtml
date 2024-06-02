@@ -5,90 +5,64 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Manufacturer)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Manufacturer)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SoftwareTitle)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SoftwareTitle)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AssignedServer)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AssignedServer)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PurchaseOrder)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PurchaseOrder)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PurchaseDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PurchaseDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LicenseType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LicenseType)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.LicenseExp)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.LicenseExp)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Support)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Support)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SupportExp)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SupportExp)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AmountofKeys)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AmountofKeys)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UsedKeys)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UsedKeys)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RemainingKeys)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RemainingKeys)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LicenseKey)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LicenseKey)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@Model?.Id">Delete</a> |
-    <a class="btn btn-primary" asp-action="Index">Back to List</a>
+<div class="details-container">
+    <div class="details-title">License Details</div>
+    <div class="details-item">
+        <span class="details-label">Manufacturer:</span>
+        <span class="details-value">@Html.DisplayFor(model => model.Manufacturer)</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Software Title:</span>
+        <span class="details-value">@Html.DisplayFor(model => model.SoftwareTitle)</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Assigned Server:</span>
+        <span class="details-value">@Html.DisplayFor(model => model.AssignedServer)</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Purchase Order:</span>
+        <span class="details-value">@Html.DisplayFor(model => model.PurchaseOrder)</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Purchase Date:</span>
+        <span class="details-value">@Html.DisplayFor(model => model.PurchaseDate)</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">License Type:</span>
+        <span class="details-value">@Html.DisplayFor(model => model.LicenseType)</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">License Expiry:</span>
+        <span class="details-value">@Html.DisplayFor(model => model.LicenseExp)</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Support:</span>
+        <span class="details-value">@Html.DisplayFor(model => model.Support)</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Support Expiry:</span>
+        <span class="details-value">@Html.DisplayFor(model => model.SupportExp)</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Amount of Keys:</span>
+        <span class="details-value">@Html.DisplayFor(model => model.AmountofKeys)</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Used Keys:</span>
+        <span class="details-value">@Html.DisplayFor(model => model.UsedKeys)</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Remaining Keys:</span>
+        <span class="details-value">@Html.DisplayFor(model => model.RemainingKeys)</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">License Key:</span>
+        <span class="details-value">@Html.DisplayFor(model => model.LicenseKey)</span>
+    </div>
+
+    <div class="details-buttons">
+        <a class="btn btn-primary btn-custom" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+        <a class="btn btn-danger btn-custom" asp-action="Delete" asp-route-id="@Model?.Id">Delete</a>
+        <a class="btn btn-primary btn-custom" asp-action="Index">Back to List</a>
+    </div>
 </div>

@@ -5,87 +5,125 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Manufacturer" class="control-label"></label>
-                <input asp-for="Manufacturer" class="form-control" />
-                <span asp-validation-for="Manufacturer" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SoftwareTitle" class="control-label"></label>
-                <input asp-for="SoftwareTitle" class="form-control" />
-                <span asp-validation-for="SoftwareTitle" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AssignedServer" class="control-label"></label>
-                <input asp-for="AssignedServer" class="form-control" />
-                <span asp-validation-for="AssignedServer" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PurchaseOrder" class="control-label"></label>
-                <input asp-for="PurchaseOrder" class="form-control" />
-                <span asp-validation-for="PurchaseOrder" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PurchaseDate" class="control-label"></label>
-                <input asp-for="PurchaseDate" class="form-control" />
-                <span asp-validation-for="PurchaseDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LicenseType" class="control-label"></label>
-                <input asp-for="LicenseType" class="form-control" />
-                <span asp-validation-for="LicenseType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LicenseExp" class="control-label"></label>
-                <input asp-for="LicenseExp" class="form-control" />
-                <span asp-validation-for="LicenseExp" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Support" /> @Html.DisplayNameFor(model => model.Support)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="SupportExp" class="control-label"></label>
-                <input asp-for="SupportExp" class="form-control" />
-                <span asp-validation-for="SupportExp" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AmountofKeys" class="control-label"></label>
-                <input asp-for="AmountofKeys" class="form-control" />
-                <span asp-validation-for="AmountofKeys" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UsedKeys" class="control-label"></label>
-                <input asp-for="UsedKeys" class="form-control" />
-                <span asp-validation-for="UsedKeys" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RemainingKeys" class="control-label"></label>
-                <input asp-for="RemainingKeys" class="form-control" />
-                <span asp-validation-for="RemainingKeys" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LicenseKey" class="control-label"></label>
-                <input asp-for="LicenseKey" class="form-control" />
-                <span asp-validation-for="LicenseKey" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-success" />
-            </div>
-        </form>
+<div class="create-container">
+    <div class="create-title">Create New License</div>
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <form asp-action="Create" class="create-form">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <input asp-for="Manufacturer" class="form-control" placeholder="Manufacturer" />
+                    <span asp-validation-for="Manufacturer" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="SoftwareTitle" class="form-control" placeholder="Software Title" />
+                    <span asp-validation-for="SoftwareTitle" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="AssignedServer" class="form-control" placeholder="Assigned Server" />
+                    <span asp-validation-for="AssignedServer" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="PurchaseOrder" class="form-control" placeholder="Purchase Order" />
+                    <span asp-validation-for="PurchaseOrder" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PurchaseDate" class="control-label">Purchase Date</label>
+                    <input asp-for="PurchaseDate" class="form-control" placeholder="Purchase Date" />
+                    <span asp-validation-for="PurchaseDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <select asp-for="LicenseType" class="form-control" placeholder="License Type">
+                        <option value="Annual">Annual</option>
+                        <option value="Perpetual">Perpetual</option>
+                        <option value="Monthly">Monthly</option>
+                    </select>
+                    <span asp-validation-for="LicenseType" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LicenseExp" class="control-label">License Expiry</label>
+                    <input asp-for="LicenseExp" class="form-control" placeholder="License Expiry" />
+                    <span asp-validation-for="LicenseExp" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input id="Support" asp-for="Support" class="form-check-input" />
+                    <label class="form-check-label" asp-for="Support">Support</label>
+                    <span asp-validation-for="Support" class="text-danger"></span>
+                </div>
+                <div class="form-group support-expiry-field" style="display:none;">
+                    <label asp-for="SupportExp" class="control-label">Support Expiry</label>
+                    <input asp-for="SupportExp" class="form-control" />
+                    <span asp-validation-for="SupportExp" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="UsedKeys" class="control-label">Used Keys</label>
+                    <input id="usedKeys" asp-for="UsedKeys" class="form-control" placeholder="Used Keys" />
+                    <span asp-validation-for="UsedKeys" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AmountofKeys" class="control-label">Total Keys</label>
+                    <input id="totalKeys" asp-for="AmountofKeys" class="form-control" placeholder="Total Keys" />
+                    <span asp-validation-for="AmountofKeys" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="RemainingKeys" class="control-label">Remaining Keys</label>
+                    <input id="remainingKeys" asp-for="RemainingKeys" class="form-control" placeholder="Remaining Keys" readonly />
+                    <span asp-validation-for="RemainingKeys" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="LicenseKey" class="form-control" placeholder="License Key" />
+                    <span asp-validation-for="LicenseKey" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-success btn-custom" />
+                    <a class="btn btn-primary btn-custom" asp-action="Index">Back to List</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a class="btn btn-primary" asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var supportCheckbox = document.getElementById('Support');
+            var supportExpiryField = document.querySelector('.support-expiry-field');
+
+            // Function to toggle Support Expiry field visibility
+            function toggleSupportExpiryField() {
+                if (supportCheckbox.checked) {
+                    supportExpiryField.style.display = 'block';
+                } else {
+                    supportExpiryField.style.display = 'none';
+                }
+            }
+
+            // Toggle Support Expiry field visibility on initial load
+            toggleSupportExpiryField();
+
+            // Toggle Support Expiry field visibility on checkbox change
+            supportCheckbox.addEventListener('change', toggleSupportExpiryField);
+
+            // Update remaining keys when used keys or total keys are changed
+            document.getElementById('usedKeys').addEventListener('change', function () {
+                updateRemainingKeys();
+            });
+            document.getElementById('totalKeys').addEventListener('change', function () {
+                updateRemainingKeys();
+            });
+
+            function updateRemainingKeys() {
+                var usedKeys = parseInt(document.getElementById('usedKeys').value) || 0;
+                var totalKeys = parseInt(document.getElementById('totalKeys').value) || 0;
+                var remainingKeys = totalKeys - usedKeys;
+
+                document.getElementById('remainingKeys').value = remainingKeys;
+            }
+        });
+    </script>
+
 }
