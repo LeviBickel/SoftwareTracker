@@ -17,7 +17,11 @@ namespace SoftwareTracker.Data
             List<String> secrets = new List<String>();
             secrets.Add($"SoftwareTracker/{secret}");
             var getSecretValueBody = new GetSecretValue(names: secrets, token: token);
-            Dictionary<string, string> getSecretValueResult = instance.GetSecretValue(getSecretValueBody);
+            Dictionary<string, object> secretValueResult = instance.GetSecretValue(getSecretValueBody);
+            Dictionary<string, string> getSecretValueResult = secretValueResult.ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.ToString()
+            );
             return getSecretValueResult[$"SoftwareTracker/{secret}"];
         }
         private static string AuthenticateToAKeyless()
