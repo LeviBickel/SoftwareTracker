@@ -56,14 +56,14 @@
                     <span asp-validation-for="SupportExp" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="UsedKeys" class="control-label">Used Keys</label>
-                    <input id="usedKeys" asp-for="UsedKeys" class="form-control" placeholder="Used Keys" />
-                    <span asp-validation-for="UsedKeys" class="text-danger"></span>
-                </div>
-                <div class="form-group">
                     <label asp-for="AmountofKeys" class="control-label">Total Keys</label>
                     <input id="totalKeys" asp-for="AmountofKeys" class="form-control" placeholder="Total Keys" />
                     <span asp-validation-for="AmountofKeys" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="UsedKeys" class="control-label">Used Keys</label>
+                    <input id="usedKeys" asp-for="UsedKeys" class="form-control" placeholder="Used Keys" />
+                    <span asp-validation-for="UsedKeys" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="RemainingKeys" class="control-label">Remaining Keys</label>
@@ -73,6 +73,18 @@
                 <div class="form-group">
                     <input asp-for="LicenseKey" class="form-control" placeholder="License Key" />
                     <span asp-validation-for="LicenseKey" class="text-danger"></span>
+                </div>
+                <hr/>
+                <h4>Notifications</h4>
+                <div class="form-group">
+                    <input id="NotifyOnLicExp" asp-for="NotifyOnLicExp" class="form-check-input" />
+                    <label class="form-check-label" asp-for="NotifyOnLicExp">License Expiration</label>
+                    <span asp-validation-for="NotifyOnLicExp" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input id="NotifyOnSupExp" asp-for="NotifyOnSupExp" class="form-check-input" />
+                    <label class="form-check-label" asp-for="NotifyOnSupExp">Support Expiration</label>
+                    <span asp-validation-for="NotifyOnSupExp" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Create" class="btn btn-success btn-custom" />

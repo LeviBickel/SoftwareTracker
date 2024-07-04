@@ -59,7 +59,14 @@
         <span class="details-label">License Key:</span>
         <span class="details-value">@Html.DisplayFor(model => model.LicenseKey)</span>
     </div>
-
+    <div class="details-item">
+        <span class="details-label">Notify on License Expiration:</span>
+        <span class="details-value">@Html.DisplayFor(model => model.NotifyOnLicExp)</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Notify on Support Expiration:</span>
+        <span class="details-value">@Html.DisplayFor(model => model.NotifyOnSupExp)</span>
+    </div>
     <div class="details-buttons">
         <a class="btn btn-primary btn-custom" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
         <a class="btn btn-danger btn-custom" asp-action="Delete" asp-route-id="@Model?.Id">Delete</a>
