@@ -60,7 +60,7 @@ namespace SoftwareTracker.Controllers
         // POST: License/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Manufacturer,SoftwareTitle,AssignedServer,PurchaseOrder,PurchaseDate,LicenseType,LicenseExp,Support,SupportExp,AmountofKeys,UsedKeys,RemainingKeys,LicenseKey")] LicenseModel licenseModel)
+        public async Task<IActionResult> Create([Bind("Id,Manufacturer,SoftwareTitle,AssignedServer,PurchaseOrder,PurchaseDate,LicenseType,LicenseExp,Support,SupportExp,AmountofKeys,UsedKeys,RemainingKeys,LicenseKey,NotifyOnLicExp,NotifyOnSupExp")] LicenseModel licenseModel)
         {
             licenseModel.AddedBy = _userManager.GetUserId(User);
             if (licenseModel.AddedBy != null) { ModelState["AddedBy"].ValidationState = Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Valid; }
@@ -116,7 +116,7 @@ namespace SoftwareTracker.Controllers
         // POST: License/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Manufacturer,SoftwareTitle,AssignedServer,PurchaseOrder,PurchaseDate,LicenseType,LicenseExp,Support,SupportExp,AmountofKeys,UsedKeys,RemainingKeys,LicenseKey,AddedBy")] LicenseModel licenseModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Manufacturer,SoftwareTitle,AssignedServer,PurchaseOrder,PurchaseDate,LicenseType,LicenseExp,Support,SupportExp,AmountofKeys,UsedKeys,RemainingKeys,LicenseKey,AddedBy,NotifyOnLicExp,NotifyOnSupExp")] LicenseModel licenseModel)
         {
             if (id != licenseModel.Id)
             {
