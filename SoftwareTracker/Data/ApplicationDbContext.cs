@@ -13,5 +13,7 @@ namespace SoftwareTracker.Data
         }
         public DbSet<LicenseModel> Licenses { get; set; }
         public DbSet<UserAdministration> userAdministration {  get; set; }
+
+        public DbSet<ArchivalModel> Archival { get; set; }
     }
 }

@@ -179,6 +179,26 @@ namespace SoftwareTracker.Controllers
             if (licenseModel != null)
             {
                 _logger.LogCritical($"{User.Identity.Name} is deleting License with Id: {licenseModel.Id}");
+                ArchivalModel archived = new ArchivalModel
+                {
+                    Manufacturer = licenseModel.Manufacturer,
+                    SoftwareTitle = licenseModel.SoftwareTitle,
+                    AssignedServer = licenseModel.AssignedServer,
+                    PurchaseDate = licenseModel.PurchaseDate,
+                    PurchaseOrder = licenseModel.PurchaseOrder,
+                    LicenseType = licenseModel.LicenseType,
+                    Support = licenseModel.Support,
+                    SupportExp = licenseModel.SupportExp,
+                    AmountofKeys = licenseModel.AmountofKeys,
+                    UsedKeys = licenseModel.UsedKeys,
+                    RemainingKeys = licenseModel.RemainingKeys,
+                    LicenseKey = licenseModel.LicenseKey,
+                    AddedBy = licenseModel.AddedBy,
+                    LicenseExp = licenseModel.LicenseExp,
+                    Notified = licenseModel.Notified,
+                    DeletedOn = DateTime.Now
+                };
+                await _context.Archival.AddAsync(archived);
                 _context.Licenses.Remove(licenseModel);
             }
 

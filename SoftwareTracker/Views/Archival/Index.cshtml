@@ -1,0 +1,126 @@
+﻿@model IEnumerable<SoftwareTracker.Models.ArchivalModel>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Manufacturer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SoftwareTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AssignedServer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PurchaseOrder)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PurchaseDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LicenseType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LicenseExp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Support)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SupportExp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AmountofKeys)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UsedKeys)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RemainingKeys)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LicenseKey)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AddedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Notified)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeletedOn)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Manufacturer)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SoftwareTitle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AssignedServer)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PurchaseOrder)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PurchaseDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LicenseType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LicenseExp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Support)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SupportExp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AmountofKeys)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UsedKeys)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RemainingKeys)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LicenseKey)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AddedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Notified)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeletedOn)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
