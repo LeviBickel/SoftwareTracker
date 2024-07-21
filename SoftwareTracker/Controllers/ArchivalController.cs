@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SoftwareTracker.Data;
+using SoftwareTracker.Data.Migrations;
 using SoftwareTracker.Models;
 
 namespace SoftwareTracker.Controllers
@@ -42,31 +43,32 @@ namespace SoftwareTracker.Controllers
             {
                 return NotFound();
             }
+            else if (archivalModel.AddedBy != _userManager.GetUserId(User))
+            {
+                return NotFound();
+            }
 
             return View(archivalModel);
         }
 
         // GET: Archival/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+        //public IActionResult Create()
+        //{
+        //    return View();
+        //}
 
-        // POST: Archival/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Manufacturer,SoftwareTitle,AssignedServer,PurchaseOrder,PurchaseDate,LicenseType,LicenseExp,Support,SupportExp,AmountofKeys,UsedKeys,RemainingKeys,LicenseKey,AddedBy,Notified,DeletedOn")] ArchivalModel archivalModel)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(archivalModel);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(archivalModel);
-        }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create([Bind("Id,Manufacturer,SoftwareTitle,AssignedServer,PurchaseOrder,PurchaseDate,LicenseType,LicenseExp,Support,SupportExp,AmountofKeys,UsedKeys,RemainingKeys,LicenseKey,AddedBy,Notified,DeletedOn")] ArchivalModel archivalModel)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        _context.Add(archivalModel);
+        //        await _context.SaveChangesAsync();
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    return View(archivalModel);
+        //}
 
         // GET: Archival/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -81,6 +83,11 @@ namespace SoftwareTracker.Controllers
             {
                 return NotFound();
             }
+            else if (archivalModel.AddedBy != _userManager.GetUserId(User))
+            {
+                return NotFound();
+            }
+
             return View(archivalModel);
         }
 
@@ -128,6 +135,10 @@ namespace SoftwareTracker.Controllers
             var archivalModel = await _context.Archival
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (archivalModel == null)
+            {
+                return NotFound();
+            }
+            else if (archivalModel.AddedBy != _userManager.GetUserId(User))
             {
                 return NotFound();
             }

@@ -47,6 +47,10 @@ namespace SoftwareTracker.Controllers
             {
                 return NotFound();
             }
+            else if(licenseModel.AddedBy != _userManager.GetUserId(User))
+            {
+                return NotFound();
+            }
             licenseModel.LicenseKey = EncryptionHelper.Decrypt(licenseModel.LicenseKey);
             return View(licenseModel);
         }
@@ -109,6 +113,10 @@ namespace SoftwareTracker.Controllers
             {
                 return NotFound();
             }
+            else if (licenseModel.AddedBy != _userManager.GetUserId(User))
+            {
+                return NotFound();
+            }
             licenseModel.LicenseKey = EncryptionHelper.Decrypt(licenseModel.LicenseKey);
             return View(licenseModel);
         }
@@ -166,7 +174,10 @@ namespace SoftwareTracker.Controllers
             {
                 return NotFound();
             }
-
+            else if (licenseModel.AddedBy != _userManager.GetUserId(User))
+            {
+                return NotFound();
+            }
             return View(licenseModel);
         }
 
