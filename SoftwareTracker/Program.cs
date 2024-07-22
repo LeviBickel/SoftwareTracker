@@ -69,7 +69,11 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
-
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("Referrer-Policy", "no-referrer");
+    await next();
+});
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
