@@ -53,5 +53,6 @@ namespace SoftwareTracker.Models
         public bool Notified {  get; set; }
         public bool NotifyOnLicExp{get;set;}
         public bool NotifyOnSupExp {get;set;}
+        public bool supNotified { get; set; }
     }
 }
