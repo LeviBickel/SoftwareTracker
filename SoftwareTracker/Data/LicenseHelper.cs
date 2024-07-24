@@ -69,12 +69,15 @@ namespace SoftwareTracker.Data
                         string message = $"This is an automated notification that support for your {license.Manufacturer} - {license.SoftwareTitle} license is going to expire on {license.SupportExp}";
                         await _emailSender.SendEmailAsync(emailAddress,subject,message);
                     }
-                    else if (license.SupportExp <= DateTime.Today && license.NotifyOnSupExp == true){
+                    else if (license.SupportExp <= DateTime.Today && license.NotifyOnSupExp == true && license.supNotified == false){
                         var user = await _userManager.FindByIdAsync(license.AddedBy);
                         string emailAddress = user.UserName;
                         string subject = $"Support for your {license.Manufacturer} license has expired";
                         string message = $"This is an automated notification that support for your {license.Manufacturer} - {license.SoftwareTitle} license expired on {license.SupportExp}";
                         await _emailSender.SendEmailAsync(emailAddress, subject, message);
+                        license.supNotified = true;
+                        _context.Update(license);
+                        await _context.SaveChangesAsync();
                     }
                 }
             }
