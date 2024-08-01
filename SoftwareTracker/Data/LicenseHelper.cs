@@ -25,7 +25,7 @@ namespace SoftwareTracker.Data
         //the license. Email is their username.
         public async Task LicenseScan()
         {
-            List<LicenseModel> licenses = _context.Licenses.Where(m=>m.LicenseExp <= DateTime.Now.AddDays(1) && m.Notified == false).ToList();
+            List<LicenseModel> licenses = _context.Licenses.Where(m=>m.LicenseExp <= DateTime.Now.AddDays(1)).ToList();
             try
             {
                 if(licenses.Count <= 0)
@@ -38,7 +38,7 @@ namespace SoftwareTracker.Data
                 foreach(var license in licenses.Where(m=>m.NotifyOnLicExp == true || m.NotifyOnSupExp == true)) 
                 {
                     //Check for license expirations:
-                    if (license.LicenseExp <= DateTime.Now.AddDays(1) && license.LicenseExp >= DateTime.Today && license.NotifyOnLicExp == true)
+                    if (license.LicenseExp <= DateTime.Now.AddDays(1) && license.LicenseExp >= DateTime.Today && license.NotifyOnLicExp == true && license.Notified == false)
                     {
                         //the license is set to expire within the next day... send an email to the responsible party.
                         //this class should provide: email, subject, message
@@ -48,7 +48,7 @@ namespace SoftwareTracker.Data
                         string message = $"This is an automated notification that your {license.Manufacturer} - {license.SoftwareTitle} license is going to expire on {license.LicenseExp}";
                         await _emailSender.SendEmailAsync(emailAddress,subject,message);
                     }
-                    else if(license.LicenseExp <= DateTime.Today && license.NotifyOnLicExp == true)
+                    else if(license.LicenseExp <= DateTime.Today && license.NotifyOnLicExp == true && license.Notified == false)
                     {
                         //The license has already expired. Send an expiration message and change the notified flag so we don't send them an email every day.
                         var user = await _userManager.FindByIdAsync(license.AddedBy);
@@ -62,7 +62,7 @@ namespace SoftwareTracker.Data
                     }
 
                     //Check for support expirations:
-                    if(license.Support == true && license.SupportExp <= DateTime.Now.AddDays(1) && license.NotifyOnSupExp == true){
+                    if(license.Support == true && license.SupportExp <= DateTime.Now.AddDays(1) && license.NotifyOnSupExp == true && license.supNotified == false){
                         var user = await _userManager.FindByIdAsync(license.AddedBy);
                         string emailAddress = user.UserName;
                         string subject = $"Support for {license.Manufacturer} license is going to expire";
