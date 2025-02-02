@@ -5,10 +5,16 @@ using SoftwareTracker.Data;
 using Hangfire;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Options;
+using Auth0.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddAuth0WebAppAuthentication(options =>
+{
+    options.Domain = AkeylessHelper.RetrieveSecret("Domain");
+    options.ClientId = AkeylessHelper.RetrieveSecret("ClientId");
+});
 var connectionString = AkeylessHelper.RetrieveSecret("ConnectionString"); //builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
@@ -68,6 +74,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 app.Use(async (context, next) =>
 {
