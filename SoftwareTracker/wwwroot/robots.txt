@@ -1,0 +1,18 @@
+# robots.txt for SoftwareTracker
+
+User-agent: *
+Allow: /
+Allow: /Home/
+Allow: /Home/Privacy
+
+# Disallow private/authenticated areas
+Disallow: /License/
+Disallow: /Archival/
+Disallow: /Account/
+Disallow: /UserAdministration/
+
+# Sitemap location
+Sitemap: https://yourdomain.com/sitemap.xml
+
+# Crawl delay (optional - adjust based on server capacity)
+Crawl-delay: 1

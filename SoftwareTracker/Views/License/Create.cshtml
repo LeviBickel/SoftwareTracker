@@ -1,15 +1,20 @@
 ﻿@model SoftwareTracker.Models.LicenseModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create License";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="create-container">
-    <div class="create-title">Create New License</div>
-    <div class="row">
-        <div class="col-md-6 offset-md-3">
-            <form asp-action="Create" class="create-form">
+<div class="container">
+<div class="page-header">
+    <h1 class="page-title">Create New License</h1>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <form asp-action="Create">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
                     <input asp-for="Manufacturer" class="form-control" placeholder="Manufacturer" />
@@ -86,13 +91,20 @@
                     <label class="form-check-label" asp-for="NotifyOnSupExp">Support Expiration</label>
                     <span asp-validation-for="NotifyOnSupExp" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <input type="submit" value="Create" class="btn btn-success btn-custom" />
-                    <a class="btn btn-primary btn-custom" asp-action="Index">Back to List</a>
+                <div class="form-group" style="margin-top: 2rem; display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.5rem;">
+                            <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+                        </svg>
+                        Create License
+                    </button>
+                    <a class="btn btn-outline" asp-action="Index">Cancel</a>
                 </div>
             </form>
         </div>
     </div>
+</div>
+</div>
 </div>
 
 @section Scripts {

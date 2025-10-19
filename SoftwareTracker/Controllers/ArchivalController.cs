@@ -1,31 +1,40 @@
-﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SoftwareTracker.Data;
 using SoftwareTracker.Data.Migrations;
 using SoftwareTracker.Models;
+using SoftwareTracker.Extensions;
 
 namespace SoftwareTracker.Controllers
 {
     public class ArchivalController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
 
-        public ArchivalController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public ArchivalController(ApplicationDbContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
         // GET: Archival
         public async Task<IActionResult> Index()
         {
-            var archivedLicenses = _context.Archival.Where(m => m.AddedBy == _userManager.GetUserId(User)).Take(500).ToList();
-            foreach(var license in archivedLicenses)
+            var userId = User.GetAuth0UserId();
+
+            // PERFORMANCE FIX: Use async and AsNoTracking
+            var archivedLicenses = await _context.Archival
+                .AsNoTracking()
+                .Where(m => m.AddedBy == userId)
+                .OrderByDescending(m => m.DeletedOn)
+                .Take(500)
+                .ToListAsync();
+
+            // Decrypt in parallel for better performance
+            Parallel.ForEach(archivedLicenses, license =>
             {
                 license.LicenseKey = EncryptionHelper.Decrypt(license.LicenseKey);
-            }
+            });
+
             return View(archivedLicenses);
         }
 
@@ -37,38 +46,21 @@ namespace SoftwareTracker.Controllers
                 return NotFound();
             }
 
+            var userId = User.GetAuth0UserId();
+
+            // Single query with user validation
             var archivalModel = await _context.Archival
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.Id == id && m.AddedBy == userId);
+
             if (archivalModel == null)
             {
                 return NotFound();
             }
-            else if (archivalModel.AddedBy != _userManager.GetUserId(User))
-            {
-                return NotFound();
-            }
 
+            archivalModel.LicenseKey = EncryptionHelper.Decrypt(archivalModel.LicenseKey);
             return View(archivalModel);
         }
-
-        // GET: Archival/Create
-        //public IActionResult Create()
-        //{
-        //    return View();
-        //}
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("Id,Manufacturer,SoftwareTitle,AssignedServer,PurchaseOrder,PurchaseDate,LicenseType,LicenseExp,Support,SupportExp,AmountofKeys,UsedKeys,RemainingKeys,LicenseKey,AddedBy,Notified,DeletedOn")] ArchivalModel archivalModel)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(archivalModel);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(archivalModel);
-        //}
 
         // GET: Archival/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -78,16 +70,18 @@ namespace SoftwareTracker.Controllers
                 return NotFound();
             }
 
-            var archivalModel = await _context.Archival.FindAsync(id);
+            var userId = User.GetAuth0UserId();
+
+            // Single query with user validation
+            var archivalModel = await _context.Archival
+                .FirstOrDefaultAsync(m => m.Id == id && m.AddedBy == userId);
+
             if (archivalModel == null)
             {
                 return NotFound();
             }
-            else if (archivalModel.AddedBy != _userManager.GetUserId(User))
-            {
-                return NotFound();
-            }
 
+            archivalModel.LicenseKey = EncryptionHelper.Decrypt(archivalModel.LicenseKey);
             return View(archivalModel);
         }
 
@@ -105,12 +99,13 @@ namespace SoftwareTracker.Controllers
             {
                 try
                 {
+                    archivalModel.LicenseKey = EncryptionHelper.Encrypt(archivalModel.LicenseKey);
                     _context.Update(archivalModel);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ArchivalModelExists(archivalModel.Id))
+                    if (!await ArchivalModelExistsAsync(archivalModel.Id))
                     {
                         return NotFound();
                     }
@@ -132,17 +127,19 @@ namespace SoftwareTracker.Controllers
                 return NotFound();
             }
 
+            var userId = User.GetAuth0UserId();
+
+            // Single query with user validation
             var archivalModel = await _context.Archival
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.Id == id && m.AddedBy == userId);
+
             if (archivalModel == null)
             {
                 return NotFound();
             }
-            else if (archivalModel.AddedBy != _userManager.GetUserId(User))
-            {
-                return NotFound();
-            }
 
+            archivalModel.LicenseKey = EncryptionHelper.Decrypt(archivalModel.LicenseKey);
             return View(archivalModel);
         }
 
@@ -161,9 +158,9 @@ namespace SoftwareTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ArchivalModelExists(int id)
+        private async Task<bool> ArchivalModelExistsAsync(int id)
         {
-            return _context.Archival.Any(e => e.Id == id);
+            return await _context.Archival.AnyAsync(e => e.Id == id);
         }
     }
 }

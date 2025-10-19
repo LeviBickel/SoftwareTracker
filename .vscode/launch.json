@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/SoftwareTracker/bin/Debug/net8.0/SoftwareTracker.dll",
+            "program": "${workspaceFolder}/SoftwareTracker/bin/Debug/net9.0/SoftwareTracker.dll",
             "args": [],
             "cwd": "${workspaceFolder}/SoftwareTracker",
             "stopAtEntry": false,
