@@ -1,126 +1,78 @@
 ﻿@model IEnumerable<SoftwareTracker.Models.ArchivalModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Archived Licenses";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<div class="container">
+<div class="page-header">
+    <h1 class="page-title">Archived Licenses</h1>
+    <p class="text-muted">Showing up to 500 most recently deleted licenses</p>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Manufacturer)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SoftwareTitle)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AssignedServer)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PurchaseOrder)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PurchaseDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LicenseType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LicenseExp)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Support)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SupportExp)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AmountofKeys)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UsedKeys)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RemainingKeys)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LicenseKey)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AddedBy)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Notified)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DeletedOn)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Manufacturer)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SoftwareTitle)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AssignedServer)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PurchaseOrder)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PurchaseDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LicenseType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LicenseExp)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Support)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SupportExp)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AmountofKeys)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UsedKeys)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RemainingKeys)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LicenseKey)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AddedBy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Notified)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DeletedOn)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+@if (Model.Any())
+{
+    <div class="license-grid">
+        @foreach (var item in Model)
+        {
+            <div class="license-card archived">
+                <div class="license-card-header">
+                    <h3 class="license-title">@item.SoftwareTitle</h3>
+                    <div class="license-manufacturer">@item.Manufacturer</div>
+                    <span class="badge badge-secondary" style="margin-top: 0.5rem;">Deleted @item.DeletedOn.ToShortDateString()</span>
+                </div>
+
+                <div class="license-card-body">
+                    <div class="license-info">
+                        <div class="license-info-row">
+                            <span class="license-label">Server:</span>
+                            <span class="license-value">@item.AssignedServer</span>
+                        </div>
+                        <div class="license-info-row">
+                            <span class="license-label">Purchase Order:</span>
+                            <span class="license-value">@item.PurchaseOrder</span>
+                        </div>
+                        <div class="license-info-row">
+                            <span class="license-label">Type:</span>
+                            <span class="license-value">@item.LicenseType</span>
+                        </div>
+                        <div class="license-info-row">
+                            <span class="license-label">License Expired:</span>
+                            <span class="license-value">@item.LicenseExp.ToShortDateString()</span>
+                        </div>
+                        @if (item.Support)
+                        {
+                            <div class="license-info-row">
+                                <span class="license-label">Support Expired:</span>
+                                <span class="license-value">@item.SupportExp?.ToShortDateString()</span>
+                            </div>
+                        }
+                        <div class="license-info-row">
+                            <span class="license-label">Keys Used:</span>
+                            <span class="license-value">@item.UsedKeys / @item.AmountofKeys</span>
+                        </div>
+                    </div>
+
+                    <div class="license-actions">
+                        <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-outline">View Details</a>
+                        <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-sm btn-danger">Permanently Delete</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 }
-    </tbody>
-</table>
+else
+{
+    <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+        </svg>
+        <h2>No Archived Licenses</h2>
+        <p>Deleted licenses will appear here for reference.</p>
+        <a class="btn btn-outline" asp-controller="License" asp-action="Index">View Active Licenses</a>
+    </div>
+}
+</div>

@@ -1,9 +1,188 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Home";
+    ViewData["Description"] = "SoftwareTracker - Professional software license management platform. Track license keys, monitor expiration dates, manage software assets, and automate license renewals for your organization.";
+    ViewData["Keywords"] = "software license management, license tracking, asset management, software licenses, license key storage, expiration monitoring, IT management tool";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>This is Software Tracker.</p><br/>
-    <p>Your place to store and track your different licenses.</p>
-</div>
+@if (!User.Identity.IsAuthenticated)
+{
+    <!-- Landing Page for Non-Authenticated Users -->
+    <div class="landing-hero">
+        <div class="landing-hero-content">
+            <div class="landing-badge">Software License Management</div>
+            <h1 class="landing-title">Never Lose Track of Your Software Licenses Again</h1>
+            <p class="landing-subtitle">SoftwareTracker is the modern, centralized platform for managing all your software licenses, keys, and renewals in one secure place. Get automated expiration alerts and stay compliant effortlessly.</p>
+            <div class="landing-cta">
+                <a asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg" aria-label="Get Started with SoftwareTracker">
+                    Get Started Free
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="margin-left: 0.5rem;">
+                        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="landing-trust">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01-.622-.636zm.287 5.984-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708.708z"/>
+                </svg>
+                <span>Enterprise-grade security • Free to start • No credit card required</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Value Proposition Section -->
+    <section class="landing-section">
+        <div class="landing-section-header">
+            <h2>Everything You Need to Manage Software Licenses</h2>
+            <p>A complete solution designed for IT teams, system administrators, and businesses of all sizes</p>
+        </div>
+
+        <div class="landing-features">
+            <div class="landing-feature-card">
+                <div class="landing-feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3z"/>
+                    </svg>
+                </div>
+                <h3>Centralized Dashboard</h3>
+                <p>All your licenses in one place. View everything at a glance with intuitive card-based layouts and powerful search capabilities.</p>
+            </div>
+
+            <div class="landing-feature-card">
+                <div class="landing-feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                    </svg>
+                </div>
+                <h3>Smart Expiration Alerts</h3>
+                <p>Automatic email notifications 30 days before license or support expiration. Never pay for downtime or compliance issues again.</p>
+            </div>
+
+            <div class="landing-feature-card">
+                <div class="landing-feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                    </svg>
+                </div>
+                <h3>Enterprise Security</h3>
+                <p>Bank-level encryption protects your license keys. Auth0 authentication ensures only authorized team members have access.</p>
+            </div>
+
+            <div class="landing-feature-card">
+                <div class="landing-feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm.256 7a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.740.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Z"/>
+                        <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-1.993-1.679a.5.5 0 0 0-.686.172l-1.17 1.95-.547-.547a.5.5 0 0 0-.708.708l.774.773a.75.75 0 0 0 1.174-.144l1.335-2.226a.5.5 0 0 0-.172-.686Z"/>
+                    </svg>
+                </div>
+                <h3>Team Collaboration</h3>
+                <p>Role-based access control lets admins manage users while team members track their assigned licenses seamlessly.</p>
+            </div>
+
+            <div class="landing-feature-card">
+                <div class="landing-feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15h9.286zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zM.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8H.8z"/>
+                    </svg>
+                </div>
+                <h3>License Archive</h3>
+                <p>Keep historical records of expired or retired licenses. Perfect for audits, compliance, and understanding usage patterns over time.</p>
+            </div>
+
+            <div class="landing-feature-card">
+                <div class="landing-feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2z"/>
+                        <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z"/>
+                    </svg>
+                </div>
+                <h3>Key Tracking</h3>
+                <p>Track total, used, and remaining license keys. Know exactly how many seats you have available at any time.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="landing-cta-section">
+        <div class="landing-cta-content">
+            <h2>Ready to Take Control of Your Software Licenses?</h2>
+            <p>Join businesses who trust SoftwareTracker to manage their critical software assets.</p>
+            <a asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg">
+                Start Managing Licenses Today
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="margin-left: 0.5rem;">
+                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+}
+else
+{
+    <!-- Dashboard for Authenticated Users -->
+    <div class="container">
+    <div class="dashboard-header">
+        <div>
+            <h1>Welcome Back, @User.Identity.Name!</h1>
+            <p class="text-muted">Here's an overview of your software licenses</p>
+        </div>
+        <a asp-controller="License" asp-action="Create" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.5rem;">
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+            </svg>
+            Add License
+        </a>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
+                </svg>
+            </div>
+            <div class="stat-value">@(ViewBag.TotalLicenses ?? 0)</div>
+            <div class="stat-label">Total Licenses</div>
+        </div>
+        <div class="stat-card stat-card-warning">
+            <div class="stat-icon stat-icon-warning">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+                </svg>
+            </div>
+            <div class="stat-value">@(ViewBag.ExpiringLicenses ?? 0)</div>
+            <div class="stat-label">Expiring Soon</div>
+        </div>
+        <div class="stat-card stat-card-success">
+            <div class="stat-icon stat-icon-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+                </svg>
+            </div>
+            <div class="stat-value">@(ViewBag.ActiveLicenses ?? 0)</div>
+            <div class="stat-label">Active Licenses</div>
+        </div>
+    </div>
+
+    <div class="dashboard-actions">
+        <a asp-controller="License" asp-action="Index" class="btn btn-lg btn-outline">
+            View All Licenses
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" style="margin-left: 0.5rem;">
+                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+            </svg>
+        </a>
+    </div>
+    </div>
+}
+
+@section Scripts {
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@@type": "WebPage",
+        "name": "SoftwareTracker - License Management Home",
+        "description": "Professional software license management platform for tracking and managing software assets",
+        "url": "@(Context.Request.Scheme)://@(Context.Request.Host)@(Context.Request.Path)"
+    }
+    </script>
+}

@@ -4,6 +4,7 @@ using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using SoftwareTracker.Models;
 
 namespace SoftwareTracker.Controllers
 {
@@ -27,14 +28,14 @@ public class AccountController : Controller
   [Authorize]
   public IActionResult Profile()
   {
-    return View(new
+    var profileViewModel = new UserProfileViewModel
     {
-      Name = User.Identity.Name,
-      EmailAddress = User.Claims
-        .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value,
-      ProfileImage = User.Claims
-        .FirstOrDefault(c => c.Type == "picture")?.Value
-    });
+      Name = User.Identity?.Name ?? User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value ?? "Unknown User",
+      EmailAddress = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value ?? "No email provided",
+      ProfileImage = User.Claims.FirstOrDefault(c => c.Type == "picture")?.Value
+    };
+
+    return View(profileViewModel);
   }
 
   [Authorize]

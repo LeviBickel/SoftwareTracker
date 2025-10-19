@@ -1,75 +1,195 @@
 ﻿@model SoftwareTracker.Models.LicenseModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "License Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var isExpiring = Model.LicenseExp <= DateTime.Now.AddDays(30);
+    var isSupportExpiring = Model.Support && Model.SupportExp <= DateTime.Now.AddDays(30);
 }
 
-<div class="details-container">
-    <div class="details-title">License Details</div>
-    <div class="details-item">
-        <span class="details-label">Manufacturer:</span>
-        <span class="details-value">@Html.DisplayFor(model => model.Manufacturer)</span>
+<div class="container">
+<div class="page-header">
+    <h1 class="page-title">@Model.SoftwareTitle</h1>
+    <div>
+        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
     </div>
-    <div class="details-item">
-        <span class="details-label">Software Title:</span>
-        <span class="details-value">@Html.DisplayFor(model => model.SoftwareTitle)</span>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>License Information</h2>
     </div>
-    <div class="details-item">
-        <span class="details-label">Assigned Server:</span>
-        <span class="details-value">@Html.DisplayFor(model => model.AssignedServer)</span>
+    <div class="card-body">
+        <div class="detail-grid">
+            <div class="detail-row">
+                <span class="detail-label">Manufacturer</span>
+                <span class="detail-value">@Model.Manufacturer</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Software Title</span>
+                <span class="detail-value">@Model.SoftwareTitle</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Assigned Server</span>
+                <span class="detail-value">@Model.AssignedServer</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Purchase Order</span>
+                <span class="detail-value">@Model.PurchaseOrder</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Purchase Date</span>
+                <span class="detail-value">@Model.PurchaseDate.ToShortDateString()</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">License Type</span>
+                <span class="detail-value">
+                    <span class="badge badge-info">@Model.LicenseType</span>
+                </span>
+            </div>
+        </div>
     </div>
-    <div class="details-item">
-        <span class="details-label">Purchase Order:</span>
-        <span class="details-value">@Html.DisplayFor(model => model.PurchaseOrder)</span>
+</div>
+
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <h2>Expiration Details</h2>
     </div>
-    <div class="details-item">
-        <span class="details-label">Purchase Date:</span>
-        <span class="details-value">@Html.DisplayFor(model => model.PurchaseDate)</span>
+    <div class="card-body">
+        <div class="detail-grid">
+            <div class="detail-row">
+                <span class="detail-label">License Expiry</span>
+                <span class="detail-value">
+                    @Model.LicenseExp.ToShortDateString()
+                    @if (isExpiring)
+                    {
+                        <span class="badge badge-warning">Expiring Soon</span>
+                    }
+                    else if (Model.LicenseExp < DateTime.Now)
+                    {
+                        <span class="badge badge-danger">Expired</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-success">Active</span>
+                    }
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Support Included</span>
+                <span class="detail-value">
+                    @if (Model.Support)
+                    {
+                        <span class="badge badge-success">Yes</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-secondary">No</span>
+                    }
+                </span>
+            </div>
+            @if (Model.Support)
+            {
+                <div class="detail-row">
+                    <span class="detail-label">Support Expiry</span>
+                    <span class="detail-value">
+                        @Model.SupportExp?.ToShortDateString()
+                        @if (isSupportExpiring)
+                        {
+                            <span class="badge badge-warning">Expiring Soon</span>
+                        }
+                        else if (Model.SupportExp < DateTime.Now)
+                        {
+                            <span class="badge badge-danger">Expired</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-success">Active</span>
+                        }
+                    </span>
+                </div>
+            }
+        </div>
     </div>
-    <div class="details-item">
-        <span class="details-label">License Type:</span>
-        <span class="details-value">@Html.DisplayFor(model => model.LicenseType)</span>
+</div>
+
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <h2>License Keys</h2>
     </div>
-    <div class="details-item">
-        <span class="details-label">License Expiry:</span>
-        <span class="details-value">@Html.DisplayFor(model => model.LicenseExp)</span>
+    <div class="card-body">
+        <div class="detail-grid">
+            <div class="detail-row">
+                <span class="detail-label">Total Keys</span>
+                <span class="detail-value">@Model.AmountofKeys</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Used Keys</span>
+                <span class="detail-value">@Model.UsedKeys</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Remaining Keys</span>
+                <span class="detail-value">
+                    <strong>@Model.RemainingKeys</strong>
+                    @if (Model.RemainingKeys == 0)
+                    {
+                        <span class="badge badge-warning">No Keys Available</span>
+                    }
+                </span>
+            </div>
+            <div class="detail-row" style="grid-column: 1 / -1;">
+                <span class="detail-label">License Key</span>
+                <span class="detail-value">
+                    <code style="background: var(--gray-100); padding: 0.5rem 1rem; border-radius: 4px; display: inline-block; word-break: break-all;">@Model.LicenseKey</code>
+                </span>
+            </div>
+        </div>
     </div>
-    <div class="details-item">
-        <span class="details-label">Support:</span>
-        <span class="details-value">@Html.DisplayFor(model => model.Support)</span>
+</div>
+
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <h2>Notification Settings</h2>
     </div>
-    <div class="details-item">
-        <span class="details-label">Support Expiry:</span>
-        <span class="details-value">@Html.DisplayFor(model => model.SupportExp)</span>
+    <div class="card-body">
+        <div class="detail-grid">
+            <div class="detail-row">
+                <span class="detail-label">License Expiration Alerts</span>
+                <span class="detail-value">
+                    @if (Model.NotifyOnLicExp)
+                    {
+                        <span class="badge badge-success">Enabled</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-secondary">Disabled</span>
+                    }
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Support Expiration Alerts</span>
+                <span class="detail-value">
+                    @if (Model.NotifyOnSupExp)
+                    {
+                        <span class="badge badge-success">Enabled</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-secondary">Disabled</span>
+                    }
+                </span>
+            </div>
+        </div>
     </div>
-    <div class="details-item">
-        <span class="details-label">Amount of Keys:</span>
-        <span class="details-value">@Html.DisplayFor(model => model.AmountofKeys)</span>
-    </div>
-    <div class="details-item">
-        <span class="details-label">Used Keys:</span>
-        <span class="details-value">@Html.DisplayFor(model => model.UsedKeys)</span>
-    </div>
-    <div class="details-item">
-        <span class="details-label">Remaining Keys:</span>
-        <span class="details-value">@Html.DisplayFor(model => model.RemainingKeys)</span>
-    </div>
-    <div class="details-item">
-        <span class="details-label">License Key:</span>
-        <span class="details-value">@Html.DisplayFor(model => model.LicenseKey)</span>
-    </div>
-    <div class="details-item">
-        <span class="details-label">Notify on License Expiration:</span>
-        <span class="details-value">@Html.DisplayFor(model => model.NotifyOnLicExp)</span>
-    </div>
-    <div class="details-item">
-        <span class="details-label">Notify on Support Expiration:</span>
-        <span class="details-value">@Html.DisplayFor(model => model.NotifyOnSupExp)</span>
-    </div>
-    <div class="details-buttons">
-        <a class="btn btn-primary btn-custom" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
-        <a class="btn btn-danger btn-custom" asp-action="Delete" asp-route-id="@Model?.Id">Delete</a>
-        <a class="btn btn-primary btn-custom" asp-action="Index">Back to List</a>
-    </div>
+</div>
+
+<div style="margin-top: 2rem;">
+    <a class="btn btn-outline" asp-action="Index">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.5rem;">
+            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+        </svg>
+        Back to List
+    </a>
+</div>
 </div>

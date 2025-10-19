@@ -29,8 +29,14 @@ namespace SoftwareTracker.Data
             }
         }
 
+        // NOTE: This seeder is for Microsoft Identity and is no longer used with Auth0
+        // User management is now handled through Auth0 Dashboard
         public static void SeedUsers(UserManager<IdentityUser> userManager, ApplicationDbContext context, ILogger logger)
         {
+            // This method is deprecated - Auth0 users are managed in Auth0 Dashboard
+            logger.LogWarning("SeedUsers is deprecated. Please manage users through Auth0 Dashboard.");
+
+            /* Commented out - no longer compatible with Auth0
             try
             {
                 if (!context.Users.Any(u => u.Email == "admin@software.tracker"))
@@ -51,6 +57,7 @@ namespace SoftwareTracker.Data
                 logger.LogError(ex.ToString());
                 return;
             }
+            */
         }
     }
 }

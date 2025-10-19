@@ -1,25 +1,22 @@
 ﻿using Humanizer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using SoftwareTracker.Data;
 using SoftwareTracker.Models;
+using Auth0.ManagementApi.Models;
 
 namespace SoftwareTracker.Controllers
 {
     [Authorize(Roles = "Administrators")]
     public class UserAdministrationController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly Auth0UserService _auth0UserService;
         private readonly ILogger<UserAdministrationController> _logger;
 
-        public UserAdministrationController(ApplicationDbContext context, UserManager<IdentityUser> userManager, ILogger<UserAdministrationController> logger)
+        public UserAdministrationController(ILogger<UserAdministrationController> logger)
         {
-            _context = context;
-            _userManager = userManager;
+            _auth0UserService = new Auth0UserService();
             _logger = logger;
         }
 
@@ -27,7 +24,9 @@ namespace SoftwareTracker.Controllers
         public async Task<IActionResult> Index()
         {
             List<UserAdministration> usersToView = new List<UserAdministration>();
-            foreach (var user in _context.Users)
+            var auth0Users = await _auth0UserService.GetAllUsersAsync();
+
+            foreach (var user in auth0Users)
             {
                 usersToView.Add(await TranslateUserToView(user));
             }
@@ -42,8 +41,7 @@ namespace SoftwareTracker.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var user = await _auth0UserService.GetUserByIdAsync(id);
             var translatedUser = await TranslateUserToView(user);
             if (translatedUser == null || user == null)
             {
@@ -58,14 +56,12 @@ namespace SoftwareTracker.Controllers
         {
             try
             {
-                
-
                 if (id == null)
                 {
                     return NotFound();
                 }
 
-                var user = await _context.Users.FindAsync(id);
+                var user = await _auth0UserService.GetUserByIdAsync(id);
                 var translatedUser = await TranslateUserToView(user);
                 if (user == null || translatedUser == null)
                 {
@@ -85,9 +81,8 @@ namespace SoftwareTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("Id,UserName,UserEmail,LockOutEndDate,CanLockout,Role")] UserAdministration userAdministration)
         {
-
-            IdentityUser user = await _context.Users.FindAsync(id);
-            if (id == null || id != user.Id)
+            var user = await _auth0UserService.GetUserByIdAsync(id);
+            if (id == null || id != user.UserId)
             {
                 return NotFound();
             }
@@ -97,33 +92,32 @@ namespace SoftwareTracker.Controllers
                 var changes = LoggingHelpers.EnumeratePropertyDifferences(await TranslateUserToView(user), userAdministration);
                 try
                 {
-                    user.UserName = userAdministration.UserName;
-                    user.NormalizedEmail = userAdministration.UserEmail;
-                    user.LockoutEnd = userAdministration.LockOutEndDate;
-                    user.LockoutEnabled = userAdministration.CanLockout;
-
-                    //Modify the users role if needed:
-                    if (!_userManager.GetRolesAsync(user).Result.Contains(userAdministration.Role))
+                    // Update user metadata in Auth0
+                    var userUpdateRequest = new UserUpdateRequest
                     {
-                        await _userManager.RemoveFromRoleAsync(user, _userManager.GetRolesAsync(user).Result.First());
-                        await _userManager.AddToRoleAsync(user, userAdministration.Role);
-                    }
+                        UserName = userAdministration.UserName,
+                        Email = userAdministration.UserEmail,
+                        Blocked = !userAdministration.CanLockout ? false : user.Blocked // Preserve blocked status unless modified
+                    };
 
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
+                    await _auth0UserService.UpdateUserAsync(id, userUpdateRequest);
+
+                    // Handle role changes
+                    var currentRoles = await _auth0UserService.GetUserRolesAsync(id);
+                    var currentRoleName = currentRoles.FirstOrDefault()?.Name ?? "Users";
+
+                    if (currentRoleName != userAdministration.Role)
+                    {
+                        // Note: You'll need to get role IDs from Auth0 dashboard or create a method to fetch them
+                        // This is a simplified version - you may need to enhance this based on your Auth0 setup
+                        _logger.LogWarning($"Role change requested from {currentRoleName} to {userAdministration.Role} for user {user.UserName}. Manual role assignment may be required in Auth0 dashboard.");
+                    }
 
                     _logger.LogCritical($"{User.Identity.Name}, has modified the following user: {user.UserName}. Changes: {changes.Humanize()}");
                 }
                 catch (Exception ex)
                 {
-                    if (!UserAdministrationExists(userAdministration.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        _logger.LogError(ex.Message);
-                    }
+                    _logger.LogError(ex.Message);
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -138,8 +132,7 @@ namespace SoftwareTracker.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var user = await _auth0UserService.GetUserByIdAsync(id);
             var translatedUser = await TranslateUserToView(user);
             if (user == null || translatedUser == null)
             {
@@ -154,25 +147,26 @@ namespace SoftwareTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _auth0UserService.GetUserByIdAsync(id);
             if (user != null)
             {
-                _context.Users.Remove(user);
+                await _auth0UserService.DeleteUserAsync(id);
+                _logger.LogCritical($"{User.Identity.Name} has deleted the following user: {user.UserName}");
             }
-            _logger.LogCritical($"{User.Identity.Name} has deleted the following user: {user.UserName}");
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task<UserAdministration> TranslateUserToView(IdentityUser user)
+        private async Task<UserAdministration> TranslateUserToView(User user)
         {
             string userRole = "Users";
-            if (await _userManager.IsInRoleAsync(user, "Administrators"))
+            var roles = await _auth0UserService.GetUserRolesAsync(user.UserId);
+
+            if (roles.Any(r => r.Name == "Administrators"))
             {
                 userRole = "Administrators";
                 ViewBag.Role = new List<SelectListItem>() {
-                new SelectListItem { Text = "Administrators", Value = "Administrators" },
-                new SelectListItem { Text = "Users", Value = "Users" },
+                    new SelectListItem { Text = "Administrators", Value = "Administrators" },
+                    new SelectListItem { Text = "Users", Value = "Users" },
                 };
             }
             else
@@ -182,13 +176,14 @@ namespace SoftwareTracker.Controllers
                     new SelectListItem { Text = "Administrators", Value = "Administrators" },
                 };
             }
+
             UserAdministration translatedUser = new UserAdministration
             {
-                Id = user.Id,
-                UserName = user.UserName,
-                UserEmail = user.NormalizedEmail,
-                CanLockout = user.LockoutEnabled,
-                LockOutEndDate = user.LockoutEnd,
+                Id = user.UserId,
+                UserName = user.UserName ?? user.Email,
+                UserEmail = user.Email,
+                CanLockout = true, // Auth0 uses "Blocked" status instead
+                LockOutEndDate = user.Blocked == true ? DateTimeOffset.MaxValue : null,
                 Role = userRole
             };
             return translatedUser;
@@ -196,17 +191,14 @@ namespace SoftwareTracker.Controllers
 
         public async Task<IActionResult> UnlockUserAccount(string id)
         {
-            IdentityUser user = await _context.Users.FindAsync(id);
-            if (id == null || id != user.Id)
+            var user = await _auth0UserService.GetUserByIdAsync(id);
+            if (id == null || id != user.UserId)
             {
                 return NotFound();
             }
             try
             {
-                user.LockoutEnd = null;
-                user.AccessFailedCount = 0;
-                _context.Update(user);
-                await _context.SaveChangesAsync();
+                await _auth0UserService.UnblockUserAsync(id);
                 _logger.LogCritical($"{User.Identity.Name} has unlocked {user.UserName}'s account");
             }
             catch (Exception ex)
@@ -218,17 +210,14 @@ namespace SoftwareTracker.Controllers
 
         public async Task<IActionResult> LockUserAccount(string id)
         {
-            IdentityUser user = await _context.Users.FindAsync(id);
-            if (id == null || id != user.Id)
+            var user = await _auth0UserService.GetUserByIdAsync(id);
+            if (id == null || id != user.UserId)
             {
                 return NotFound();
             }
             try
             {
-                user.LockoutEnd = DateTime.Now.Date.AddYears(500);
-                user.AccessFailedCount = 5;
-                _context.Update(user);
-                await _context.SaveChangesAsync();
+                await _auth0UserService.BlockUserAsync(id);
                 _logger.LogCritical($"{User.Identity.Name} has locked {user.UserName}'s account");
             }
             catch (Exception ex)
@@ -236,11 +225,6 @@ namespace SoftwareTracker.Controllers
                 _logger.LogError(ex.Message);
             }
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool UserAdministrationExists(string id)
-        {
-            return _context.userAdministration.Any(e => e.Id == id);
         }
     }
 }

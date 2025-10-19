@@ -1,0 +1,33 @@
+@model SoftwareTracker.Models.UserProfileViewModel
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<div class="details-container">
+    <div class="details-title">
+        User Profile
+    </div>
+
+    <div style="padding: 20px;">
+        @if (!string.IsNullOrEmpty(Model.ProfileImage))
+        {
+            <div style="text-align: center; margin-bottom: 30px;">
+                <img src="@Model.ProfileImage" alt="Profile Picture" style="border-radius: 50%; width: 150px; height: 150px; border: 3px solid #373737ff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);" />
+            </div>
+        }
+
+        <div class="details-item">
+            <span class="details-label">Name:</span>
+            <span class="details-value">@Model.Name</span>
+        </div>
+
+        <div class="details-item">
+            <span class="details-label">Email Address:</span>
+            <span class="details-value">@Model.EmailAddress</span>
+        </div>
+
+        <div class="details-buttons">
+            <a asp-controller="Home" asp-action="Index" class="btn-custom">Back to Home</a>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-using Humanizer;
+﻿using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,19 +24,11 @@ namespace SoftwareTracker.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = User.GetAuth0UserId();
-
-            // Use AsNoTracking for read-only operations (faster, no change tracking overhead)
-            var licenses = await _context.Licenses
-                .AsNoTracking()
-                .Where(m => m.AddedBy == userId)
-                .ToListAsync();
-
-            // Decrypt in parallel for better performance with multiple licenses
-            Parallel.ForEach(licenses, license =>
+            List<LicenseModel> licenses = await _context.Licenses.Where(m=>m.AddedBy == userId).ToListAsync();
+            foreach(var license in licenses)
             {
-                license.LicenseKey = EncryptionHelper.Decrypt(license.LicenseKey);
-            });
-
+                license.LicenseKey= EncryptionHelper.Decrypt(license.LicenseKey);
+            }
             return View(licenses);
         }
 
@@ -48,18 +40,16 @@ namespace SoftwareTracker.Controllers
                 return NotFound();
             }
 
-            var userId = User.GetAuth0UserId();
-
-            // Single query with user validation - more efficient
             var licenseModel = await _context.Licenses
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id && m.AddedBy == userId);
-
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (licenseModel == null)
             {
                 return NotFound();
             }
-
+            else if(licenseModel.AddedBy != User.GetAuth0UserId())
+            {
+                return NotFound();
+            }
             licenseModel.LicenseKey = EncryptionHelper.Decrypt(licenseModel.LicenseKey);
             return View(licenseModel);
         }
@@ -77,14 +67,13 @@ namespace SoftwareTracker.Controllers
         {
             licenseModel.AddedBy = User.GetAuth0UserId();
             if (licenseModel.AddedBy != null) { ModelState["AddedBy"].ValidationState = Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Valid; }
-
+            
             if (ModelState.IsValid)
             {
                 licenseModel.LicenseKey = EncryptionHelper.Encrypt(licenseModel.LicenseKey);
                 licenseModel.Notified = false;
-
-                var changes = LoggingHelpers.EnumeratePropertyDifferences(new LicenseModel()
-                {
+                var changes = LoggingHelpers.EnumeratePropertyDifferences(new LicenseModel() 
+                { 
                     Manufacturer = "new",
                     SoftwareTitle = "new",
                     AssignedServer = "new",
@@ -101,10 +90,10 @@ namespace SoftwareTracker.Controllers
                     LicenseExp = new DateTime(0),
                     Notified = false,
                 }, licenseModel).Humanize();
-
+                
                 _context.Add(licenseModel);
                 await _context.SaveChangesAsync();
-                _logger.LogInformation($"{User.Identity.Name} added a new license: {changes}");
+                _logger.LogInformation($"{User.Identity.Name} added a new license: {changes.Humanize()}");
                 return RedirectToAction(nameof(Index));
             }
             return View(licenseModel);
@@ -118,17 +107,15 @@ namespace SoftwareTracker.Controllers
                 return NotFound();
             }
 
-            var userId = User.GetAuth0UserId();
-
-            // Single query with user validation
-            var licenseModel = await _context.Licenses
-                .FirstOrDefaultAsync(m => m.Id == id && m.AddedBy == userId);
-
+            var licenseModel = await _context.Licenses.FindAsync(id);
             if (licenseModel == null)
             {
                 return NotFound();
             }
-
+            else if (licenseModel.AddedBy != User.GetAuth0UserId())
+            {
+                return NotFound();
+            }
             licenseModel.LicenseKey = EncryptionHelper.Decrypt(licenseModel.LicenseKey);
             return View(licenseModel);
         }
@@ -142,28 +129,13 @@ namespace SoftwareTracker.Controllers
             {
                 return NotFound();
             }
-
             licenseModel.AddedBy = User.GetAuth0UserId();
             if (licenseModel.AddedBy != null) { ModelState["AddedBy"].ValidationState = Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Valid; }
-
             if (ModelState.IsValid)
             {
-                // Single query to get original license - PERFORMANCE FIX: was querying twice before
-                var originalLicense = await _context.Licenses
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(m => m.Id == licenseModel.Id);
-
-                if (originalLicense == null)
-                {
-                    return NotFound();
-                }
-
                 licenseModel.LicenseKey = EncryptionHelper.Encrypt(licenseModel.LicenseKey);
-                licenseModel.Notified = originalLicense.Notified;
-                licenseModel.supNotified = originalLicense.supNotified;
-
-                var changes = LoggingHelpers.EnumeratePropertyDifferences(originalLicense, licenseModel);
-
+                licenseModel.Notified = _context.Licenses.AsNoTracking().FirstOrDefault(m=>m.Id == licenseModel.Id).Notified;
+                var changes = LoggingHelpers.EnumeratePropertyDifferences(_context.Licenses.AsNoTracking().FirstOrDefault(m=>m.Id == licenseModel.Id), licenseModel);
                 try
                 {
                     _context.Update(licenseModel);
@@ -172,7 +144,7 @@ namespace SoftwareTracker.Controllers
                 }
                 catch (Exception ex)
                 {
-                    if (!await LicenseModelExistsAsync(licenseModel.Id))
+                    if (!LicenseModelExists(licenseModel.Id))
                     {
                         return NotFound();
                     }
@@ -194,19 +166,17 @@ namespace SoftwareTracker.Controllers
                 return NotFound();
             }
 
-            var userId = User.GetAuth0UserId();
-
-            // Single query with user validation - PERFORMANCE FIX: check null before decrypt
             var licenseModel = await _context.Licenses
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id && m.AddedBy == userId);
-
+                .FirstOrDefaultAsync(m => m.Id == id);
+            licenseModel.LicenseKey = EncryptionHelper.Decrypt(licenseModel.LicenseKey);
             if (licenseModel == null)
             {
                 return NotFound();
             }
-
-            licenseModel.LicenseKey = EncryptionHelper.Decrypt(licenseModel.LicenseKey);
+            else if (licenseModel.AddedBy != User.GetAuth0UserId())
+            {
+                return NotFound();
+            }
             return View(licenseModel);
         }
 
@@ -219,8 +189,6 @@ namespace SoftwareTracker.Controllers
             if (licenseModel != null)
             {
                 _logger.LogCritical($"{User.Identity.Name} is deleting License with Id: {licenseModel.Id}");
-
-                // Create archived record
                 ArchivalModel archived = new ArchivalModel
                 {
                     Manufacturer = licenseModel.Manufacturer,
@@ -240,8 +208,7 @@ namespace SoftwareTracker.Controllers
                     Notified = licenseModel.Notified,
                     DeletedOn = DateTime.Now
                 };
-
-                _context.Archival.Add(archived);
+                await _context.Archival.AddAsync(archived);
                 _context.Licenses.Remove(licenseModel);
             }
 
@@ -249,9 +216,9 @@ namespace SoftwareTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task<bool> LicenseModelExistsAsync(int id)
+        private bool LicenseModelExists(int id)
         {
-            return await _context.Licenses.AnyAsync(e => e.Id == id);
+            return _context.Licenses.Any(e => e.Id == id);
         }
     }
 }
