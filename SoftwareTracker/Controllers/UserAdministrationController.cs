@@ -14,9 +14,9 @@ namespace SoftwareTracker.Controllers
         private readonly Auth0UserService _auth0UserService;
         private readonly ILogger<UserAdministrationController> _logger;
 
-        public UserAdministrationController(ILogger<UserAdministrationController> logger)
+        public UserAdministrationController(Auth0UserService auth0UserService, ILogger<UserAdministrationController> logger)
         {
-            _auth0UserService = new Auth0UserService();
+            _auth0UserService = auth0UserService;
             _logger = logger;
         }
 
@@ -108,9 +108,24 @@ namespace SoftwareTracker.Controllers
 
                     if (currentRoleName != userAdministration.Role)
                     {
-                        // Note: You'll need to get role IDs from Auth0 dashboard or create a method to fetch them
-                        // This is a simplified version - you may need to enhance this based on your Auth0 setup
-                        _logger.LogWarning($"Role change requested from {currentRoleName} to {userAdministration.Role} for user {user.UserName}. Manual role assignment may be required in Auth0 dashboard.");
+                        // Remove old role
+                        if (currentRoles.Any())
+                        {
+                            var oldRoleIds = currentRoles.Select(r => r.Id).ToArray();
+                            await _auth0UserService.RemoveRolesFromUserAsync(id, new AssignRolesRequest { Roles = oldRoleIds });
+                        }
+
+                        // Assign new role
+                        var newRoleId = await _auth0UserService.GetRoleIdByNameAsync(userAdministration.Role);
+                        if (!string.IsNullOrEmpty(newRoleId))
+                        {
+                            await _auth0UserService.AssignRolesToUserAsync(id, new AssignRolesRequest { Roles = new[] { newRoleId } });
+                            _logger.LogCritical($"{User.Identity.Name} changed role from {currentRoleName} to {userAdministration.Role} for user {user.UserName}");
+                        }
+                        else
+                        {
+                            _logger.LogError($"Role '{userAdministration.Role}' not found in Auth0. Please ensure the role exists.");
+                        }
                     }
 
                     _logger.LogCritical($"{User.Identity.Name}, has modified the following user: {user.UserName}. Changes: {changes.Humanize()}");

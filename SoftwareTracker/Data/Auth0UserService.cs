@@ -82,9 +82,23 @@ public class Auth0UserService
         var client = await GetAuth0ClientAsync();
         await client.Users.UpdateAsync(userId, new UserUpdateRequest { Blocked = false });
     }
+
+    public async Task<IList<Role>> GetAllRolesAsync()
+    {
+        var client = await GetAuth0ClientAsync();
+        return await client.Roles.GetAllAsync(new Auth0.ManagementApi.Models.GetRolesRequest());
+    }
+
+    public async Task<string?> GetRoleIdByNameAsync(string roleName)
+    {
+        var client = await GetAuth0ClientAsync();
+        var roles = await client.Roles.GetAllAsync(new Auth0.ManagementApi.Models.GetRolesRequest());
+        return roles.FirstOrDefault(r => r.Name == roleName)?.Id;
+    }
 }
 
 public class Auth0TokenResponse
 {
+    [System.Text.Json.Serialization.JsonPropertyName("access_token")]
     public string AccessToken { get; set; }
 }

@@ -32,6 +32,7 @@ builder.Services.AddTransient<EmailSender>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddLogging();
 builder.Services.AddScoped<LicenseHelper>();
+builder.Services.AddScoped<Auth0UserService>();
 // builder.Services.AddAuthentication().AddGoogle(options =>
 // {
 //     options.ClientId = AkeylessHelper.RetrieveSecret("Google-ClientID");
